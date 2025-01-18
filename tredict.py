@@ -1,0 +1,118 @@
+#!/usr/bin/python3
+
+#
+# tredictpy
+#
+# Copyright (c) 2025 Daniel Dean <dd@danieldean.uk>.
+#
+# Licensed under The MIT License a copy of which you should have
+# received. If not, see:
+#
+# http://opensource.org/licenses/MIT
+#
+
+# API documentation: https://www.tredict.com/blog/oauth_docs/
+
+# import requests
+import webbrowser
+import uuid
+import json
+
+import http.server
+from socketserver import TCPServer
+
+
+with open("./config.json", "rt") as f:
+    config = json.loads(f.read())
+user_uuid = str(uuid.uuid4())
+
+browser_open = webbrowser.open(
+    f"{config['auth_url']}?client_id={config['client_id']}&state={user_uuid}",
+    new=0,
+    autoraise=True,
+)
+
+if browser_open:
+    print("Opening browser successful!")
+    # Start the callback server
+
+done = False
+params = None
+
+
+def params_from_path(s: str) -> dict:
+    """Split a query string from a URL path and create a dict of the key and value parameter pairs.
+
+    Args:
+        s (str): URL path.
+
+    Returns:
+        dict: Dict of the key and value parameter pairs.
+    """
+    return dict([tuple(p.split("=")) for p in s[(s.index("?") + 1) :].split("&")])
+
+
+class Handler(http.server.BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        global done, params
+
+        if self.path.startswith("/?code="):  # Successful callback
+
+            self.send_response(200, "Ok")
+            self.end_headers()
+
+            # Create a dict of the params, should be code and state
+            params = params_from_path(self.path)
+
+            self.wfile.write("Authorisation complete!".encode("utf-8"))
+            done = True
+
+        elif self.path.startswith("/?error="):  # Error callback
+
+            self.send_response(200, "Ok")
+            self.end_headers()
+
+            # Create a dict of the params, should be code and state
+            params = params_from_path(self.path)
+
+            self.wfile.write("Authorisation failed!".encode("utf-8"))
+            done = True
+
+        elif self.path.startswith("/favicon.ico"):  # Add favicon at some point
+            self.send_response(404, "Not Found")
+            self.end_headers()
+            self.wfile.write("".encode("utf-8"))
+        elif self.path.startswith("/privacy"):  # Will add a privacy policy
+            self.send_response(204, "No Content")
+            self.end_headers()
+            self.wfile.write("".encode("utf-8"))
+        else:  # A page that does not exist was requested
+            self.send_response(404, "Not Found")
+            self.end_headers()
+            self.wfile.write("".encode("utf-8"))
+
+
+with TCPServer(("localhost", 8080), Handler) as httpd:
+    print("Callback server started...")
+    while not done:
+        httpd.handle_request()
+    print("Callback server stopped.")
+
+if "code" in params.keys():
+    print(
+        "Authorisation complete!",
+        "Callback response:",
+        json.dumps(params, indent=4),
+        sep="\n",
+    )
+else:  # If code is not in the keys authorisation failed
+    print(
+        "Authorisation failed!",
+        "Callback response:",
+        json.dumps(params, indent=4),
+        sep="\n",
+    )
+    raise ValueError("Authorisation failed!")
+
+# Now request user access token
