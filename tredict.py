@@ -14,7 +14,6 @@
 # API documentation: https://www.tredict.com/blog/oauth_docs/
 
 # import requests
-import webbrowser
 import uuid
 import json
 
@@ -30,15 +29,9 @@ with open("./config.json", "rt") as f:
     config = json.loads(f.read())
 user_uuid = str(uuid.uuid4())
 
-browser_open = webbrowser.open(
-    f"{config['auth_url']}?client_id={config['client_id']}&state={user_uuid}",
-    new=0,
-    autoraise=True,
+print(
+    f"Open this URL to authorise: {config['auth_url']}?client_id={config['client_id']}&state={user_uuid}"
 )
-
-if browser_open:
-    print("Opening browser successful!")
-    # Start the callback server
 
 
 def params_from_path(path: str) -> dict:
