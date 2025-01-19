@@ -22,6 +22,10 @@ import http.server
 from socketserver import TCPServer
 
 
+class APIException(Exception):
+    pass
+
+
 with open("./config.json", "rt") as f:
     config = json.loads(f.read())
 user_uuid = str(uuid.uuid4())
@@ -110,6 +114,8 @@ else:  # If code is not in the keys authorisation failed
         json.dumps(params, indent=4),
         sep="\n",
     )
-    raise ValueError("Authorisation failed!")
+    raise APIException(
+        f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
+    )
 
 # Now request user access token
