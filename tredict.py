@@ -40,9 +40,6 @@ if browser_open:
     print("Opening browser successful!")
     # Start the callback server
 
-done = False
-params = None
-
 
 def params_from_path(path: str) -> dict:
     """Split a query string from a URL path and create a dict of the key and value parameter pairs.
@@ -56,49 +53,64 @@ def params_from_path(path: str) -> dict:
     return dict([tuple(p.split("=")) for p in path[(path.index("?") + 1) :].split("&")])
 
 
-class Handler(http.server.BaseHTTPRequestHandler):
+def callback_server() -> dict:
+    """Run a callback server to wait for the API authorisation response.
 
-    def do_GET(self):
-        global done, params
+    Returns:
+        dict: Response parameters.
+    """
 
-        if self.path.startswith("/?code="):  # Successful callback
+    done = False
+    params = None
 
-            self.send_response(200, "Ok")
-            self.end_headers()
+    class Handler(http.server.BaseHTTPRequestHandler):
 
-            # Create a dict of the params, should be code and state
-            params = params_from_path(self.path)
+        def do_GET(self):
+            nonlocal done, params
 
-            self.wfile.write("Authorisation complete!".encode("utf-8"))
-            done = True
+            if self.path.startswith("/?code="):  # Successful callback
 
-        elif self.path.startswith("/?error="):  # Error callback
+                self.send_response(200, "Ok")
+                self.end_headers()
 
-            self.send_response(200, "Ok")
-            self.end_headers()
+                # Create a dict of the params, should be code and state
+                params = params_from_path(self.path)
 
-            # Create a dict of the params, should be code and state
-            params = params_from_path(self.path)
+                self.wfile.write("Authorisation complete!".encode("utf-8"))
+                done = True
 
-            self.wfile.write("Authorisation failed!".encode("utf-8"))
-            done = True
+            elif self.path.startswith("/?error="):  # Error callback
 
-        elif self.path.startswith("/favicon.ico"):  # Add favicon at some point
-            self.send_response(404, "Not Found")
-            self.end_headers()
-        elif self.path.startswith("/privacy"):  # Will add a privacy policy
-            self.send_response(204, "No Content")
-            self.end_headers()
-        else:  # A page that does not exist was requested
-            self.send_response(404, "Not Found")
-            self.end_headers()
+                self.send_response(200, "Ok")
+                self.end_headers()
+
+                # Create a dict of the params, should be code and state
+                params = params_from_path(self.path)
+
+                self.wfile.write("Authorisation failed!".encode("utf-8"))
+                done = True
+
+            elif self.path.startswith("/favicon.ico"):  # Add favicon at some point
+                self.send_response(404, "Not Found")
+                self.end_headers()
+            elif self.path.startswith("/privacy"):  # Will add a privacy policy
+                self.send_response(204, "No Content")
+                self.end_headers()
+            else:  # A page that does not exist was requested
+                self.send_response(404, "Not Found")
+                self.end_headers()
+
+    with TCPServer(("localhost", 8080), Handler) as httpd:
+        print("Callback server started...")
+        while not done:
+            httpd.handle_request()
+        print("Callback server stopped.")
+
+    return params
 
 
-with TCPServer(("localhost", 8080), Handler) as httpd:
-    print("Callback server started...")
-    while not done:
-        httpd.handle_request()
-    print("Callback server stopped.")
+# Start the callback server
+params = callback_server()
 
 if "code" in params.keys():
     print(
