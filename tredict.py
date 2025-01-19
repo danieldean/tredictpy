@@ -82,15 +82,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif self.path.startswith("/favicon.ico"):  # Add favicon at some point
             self.send_response(404, "Not Found")
             self.end_headers()
-            self.wfile.write("".encode("utf-8"))
         elif self.path.startswith("/privacy"):  # Will add a privacy policy
             self.send_response(204, "No Content")
             self.end_headers()
-            self.wfile.write("".encode("utf-8"))
         else:  # A page that does not exist was requested
             self.send_response(404, "Not Found")
             self.end_headers()
-            self.wfile.write("".encode("utf-8"))
 
 
 with TCPServer(("localhost", 8080), Handler) as httpd:
