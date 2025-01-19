@@ -40,16 +40,16 @@ done = False
 params = None
 
 
-def params_from_path(s: str) -> dict:
+def params_from_path(path: str) -> dict:
     """Split a query string from a URL path and create a dict of the key and value parameter pairs.
 
     Args:
-        s (str): URL path.
+        path (str): URL path.
 
     Returns:
         dict: Dict of the key and value parameter pairs.
     """
-    return dict([tuple(p.split("=")) for p in s[(s.index("?") + 1) :].split("&")])
+    return dict([tuple(p.split("=")) for p in path[(path.index("?") + 1) :].split("&")])
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
