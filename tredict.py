@@ -13,7 +13,7 @@
 
 # API documentation: https://www.tredict.com/blog/oauth_docs/
 
-# import requests
+import requests
 import uuid
 import json
 
@@ -124,3 +124,34 @@ else:  # If code is not in the keys authorisation failed
     )
 
 # Now request user access token
+
+headers = {
+    "content-type": "application/x-www-form-urlencoded",
+    "accept": "application/json;charset=UTF-8",
+}
+
+data = {
+    "grant_type": "authorization_code",  # "refresh_token",
+    "code": params["code"],
+    # "refresh_token": None,
+}
+
+r = requests.post(
+    f"{config['token_url']}{config['token_append']}",
+    headers=headers,
+    auth=(config["client_id"], config["client_secret"]),
+    data=data,
+)
+
+if r.status_code == 200:
+    print(
+        "User access token successfully retrieved!",
+        json.dumps(r.json(), indent=4),
+        sep="\n",
+    )
+else:
+    # Handle the error codes correctly
+    print(f"Retrieving User access token failed error {r.status_code} ({r.url}).")
+    raise APIException(
+        f"Retrieving user access token failed error {r.status_code} ({r.url})."
+    )
