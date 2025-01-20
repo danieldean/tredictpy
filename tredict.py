@@ -102,8 +102,19 @@ def callback_server() -> dict:
     return params
 
 
-# Start the callback server
-params = callback_server()
+def callback_headless() -> dict:
+    """Prompt the user for the API authorisation response URL.
+
+    For instances where a browser is not available on the same machine.
+
+    Returns:
+        dict: Response parameters.
+    """
+    return params_from_path(input("Paste the URL here: "))
+
+
+# Start the callback server or go headless
+params = callback_server()  # callback_headless()
 
 if "code" in params.keys():
     print(
