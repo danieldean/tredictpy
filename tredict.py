@@ -16,6 +16,7 @@
 import requests
 import uuid
 import json
+import time
 
 import http.server
 from socketserver import TCPServer
@@ -25,13 +26,20 @@ class APIException(Exception):
     pass
 
 
-with open("./config.json", "rt") as f:
-    config = json.loads(f.read())
-user_uuid = str(uuid.uuid4())
+config = None
 
-print(
-    f"Open this URL to authorise: {config['auth_url']}?client_id={config['client_id']}&state={user_uuid}"
-)
+
+def load_config() -> None:
+    global config
+    with open("./config.json", "rt") as f:
+        config = json.loads(f.read())
+
+
+def save_config(d: dict = None) -> None:
+    if d is not None:
+        config.update(d)
+    with open("./config.json", "wt") as f:
+        f.write(json.dumps(config, indent=4))
 
 
 def params_from_path(path: str) -> dict:
@@ -113,56 +121,102 @@ def callback_headless() -> dict:
     return params_from_path(input("Paste the URL here: "))
 
 
-# Start the callback server or go headless
-params = callback_server()  # callback_headless()
+def request_auth_code(headless: bool = False) -> None:
 
-if "code" in params.keys():
+    user_uuid = str(uuid.uuid4())
+
     print(
-        "Authorisation complete!",
-        "Callback response:",
-        json.dumps(params, indent=4),
-        sep="\n",
-    )
-else:  # If code is not in the keys authorisation failed
-    print(
-        "Authorisation failed!",
-        "Callback response:",
-        json.dumps(params, indent=4),
-        sep="\n",
-    )
-    raise APIException(
-        f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
+        f"Open this URL to authorise: {config['auth_url']}?client_id={config['client_id']}&state={user_uuid}"
     )
 
-# Now request user access token
+    # Start the callback server or go headless
+    params = callback_headless() if headless else callback_server()
 
-headers = {
-    "content-type": "application/x-www-form-urlencoded",
-    "accept": "application/json;charset=UTF-8",
-}
+    if "code" in params.keys():
+        print(
+            "Authorisation complete!",
+            "Callback response:",
+            json.dumps(params, indent=4),
+            sep="\n",
+        )
+        save_config({"auth_code": params})
+    else:  # If code is not in the keys authorisation failed
+        print(
+            "Authorisation failed!",
+            "Callback response:",
+            json.dumps(params, indent=4),
+            sep="\n",
+        )
+        raise APIException(
+            f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
+        )
 
-data = {
-    "grant_type": "authorization_code",  # "refresh_token",
-    "code": params["code"],
-    # "refresh_token": None,
-}
 
-r = requests.post(
-    f"{config['token_url']}{config['token_append']}",
-    headers=headers,
-    auth=(config["client_id"], config["client_secret"]),
-    data=data,
-)
+def request_user_access_token() -> None:
 
-if r.status_code == 200:
-    print(
-        "User access token successfully retrieved!",
-        json.dumps(r.json(), indent=4),
-        sep="\n",
+    headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        "accept": "application/json;charset=UTF-8",
+    }
+
+    data = {
+        "grant_type": "authorization_code",  # "refresh_token",
+        "code": config["auth_code"]["code"],
+        # "refresh_token": None,
+    }
+
+    r = requests.post(
+        f"{config['token_url']}{config['token_append']}",
+        headers=headers,
+        auth=(config["client_id"], config["client_secret"]),
+        data=data,
     )
-else:
-    # Handle the error codes correctly
-    print(f"Retrieving User access token failed error {r.status_code} ({r.url}).")
-    raise APIException(
-        f"Retrieving user access token failed error {r.status_code} ({r.url})."
+
+    if r.status_code == 200:
+        print(
+            "User access token successfully retrieved!",
+            json.dumps(r.json(), indent=4),
+            sep="\n",
+        )
+        save_config(
+            {
+                "user_access_token": r.json()
+                | {"expires_on": int(time.time() + r.json()["expires_in"])}
+            }
+        )
+    else:
+        # Handle the error codes correctly
+        print(f"Retrieving User access token failed error {r.status_code} ({r.url}).")
+        raise APIException(
+            f"Retrieving user access token failed error {r.status_code} ({r.url})."
+        )
+
+
+def deregister() -> None:
+
+    headers = {
+        "authorization": f"bearer {config['user_access_token']['access_token']}",
+    }
+
+    r = requests.delete(
+        f"{config['token_url']}{config['token_append']}", headers=headers
     )
+
+    if r.status_code == 200:
+        print("Successfully deregistered!")
+        save_config({"user_access_token": None, "auth_code": None})
+    else:
+        # Handle the error codes correctly
+        print(f"Deregistering failed error {r.status_code} ({r.url}).")
+        raise APIException(f"Deregistering failed error {r.status_code} ({r.url}).")
+
+
+load_config()
+
+request_auth_code()
+
+request_user_access_token()
+
+input("Press enter to deregister...")
+
+deregister()
