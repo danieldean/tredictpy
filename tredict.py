@@ -23,200 +23,252 @@ from socketserver import TCPServer
 
 
 class APIException(Exception):
+    """Simple exception to raise.
+
+    Args:
+        Exception (Object): Simple exception to raise.
+    """
+
     pass
 
 
-config = None
+class TredictPy:
+    """A straightforward script to authorise, authenticate and interact with Tredict."""
 
+    def __init__(self):
+        """Initialise a new instance."""
+        self._config = None
 
-def load_config() -> None:
-    global config
-    with open("./config.json", "rt") as f:
-        config = json.loads(f.read())
+    def load_config(self) -> None:
+        """Load the config from file."""
+        with open("./config.json", "rt") as f:
+            self._config = json.loads(f.read())
 
+    def save_config(self, d: dict = None) -> None:
+        """Save and optionally update the config to file.
 
-def save_config(d: dict = None) -> None:
-    if d is not None:
-        config.update(d)
-    with open("./config.json", "wt") as f:
-        f.write(json.dumps(config, indent=4))
+        Args:
+            d (dict, optional): Dict to add to the config. Defaults to None.
+        """
+        if d is not None:
+            self._config.update(d)
+        with open("./config.json", "wt") as f:
+            f.write(json.dumps(self._config, indent=4))
 
+    @staticmethod
+    def params_from_path(path: str) -> dict:
+        """Split a query string from a URL path and create a dict of the key and value parameter pairs.
 
-def params_from_path(path: str) -> dict:
-    """Split a query string from a URL path and create a dict of the key and value parameter pairs.
+        Args:
+            path (str): URL path.
 
-    Args:
-        path (str): URL path.
+        Returns:
+            dict: Dict of the key and value parameter pairs.
+        """
+        return dict(
+            [tuple(p.split("=")) for p in path[(path.index("?") + 1) :].split("&")]
+        )
 
-    Returns:
-        dict: Dict of the key and value parameter pairs.
-    """
-    return dict([tuple(p.split("=")) for p in path[(path.index("?") + 1) :].split("&")])
+    def callback_server(self) -> dict:
+        """Run a callback server to wait for the API authorisation response.
 
+        Returns:
+            dict: Response parameters.
+        """
 
-def callback_server() -> dict:
-    """Run a callback server to wait for the API authorisation response.
+        done = False
+        params = None
 
-    Returns:
-        dict: Response parameters.
-    """
+        class Handler(http.server.BaseHTTPRequestHandler):
 
-    done = False
-    params = None
+            def do_GET(self):
+                nonlocal done, params
 
-    class Handler(http.server.BaseHTTPRequestHandler):
+                if self.path.startswith("/?code="):  # Successful callback
 
-        def do_GET(self):
-            nonlocal done, params
+                    self.send_response(200, "Ok")
+                    self.end_headers()
 
-            if self.path.startswith("/?code="):  # Successful callback
+                    # Create a dict of the params, should be code and state
+                    params = TredictPy.params_from_path(self.path)
 
-                self.send_response(200, "Ok")
-                self.end_headers()
+                    self.wfile.write("Authorisation complete!".encode("utf-8"))
+                    done = True
 
-                # Create a dict of the params, should be code and state
-                params = params_from_path(self.path)
+                elif self.path.startswith("/?error="):  # Error callback
 
-                self.wfile.write("Authorisation complete!".encode("utf-8"))
-                done = True
+                    self.send_response(200, "Ok")
+                    self.end_headers()
 
-            elif self.path.startswith("/?error="):  # Error callback
+                    # Create a dict of the params, should be code and state
+                    params = TredictPy.params_from_path(self.path)
 
-                self.send_response(200, "Ok")
-                self.end_headers()
+                    self.wfile.write("Authorisation failed!".encode("utf-8"))
+                    done = True
 
-                # Create a dict of the params, should be code and state
-                params = params_from_path(self.path)
+                elif self.path.startswith("/favicon.ico"):  # Add favicon at some point
+                    self.send_response(404, "Not Found")
+                    self.end_headers()
+                elif self.path.startswith("/privacy"):  # Will add a privacy policy
+                    self.send_response(204, "No Content")
+                    self.end_headers()
+                else:  # A page that does not exist was requested
+                    self.send_response(404, "Not Found")
+                    self.end_headers()
 
-                self.wfile.write("Authorisation failed!".encode("utf-8"))
-                done = True
+        with TCPServer(("localhost", 8080), Handler) as httpd:
+            print("Callback server started...")
+            while not done:
+                httpd.handle_request()
+            print("Callback server stopped.")
 
-            elif self.path.startswith("/favicon.ico"):  # Add favicon at some point
-                self.send_response(404, "Not Found")
-                self.end_headers()
-            elif self.path.startswith("/privacy"):  # Will add a privacy policy
-                self.send_response(204, "No Content")
-                self.end_headers()
-            else:  # A page that does not exist was requested
-                self.send_response(404, "Not Found")
-                self.end_headers()
+        return params
 
-    with TCPServer(("localhost", 8080), Handler) as httpd:
-        print("Callback server started...")
-        while not done:
-            httpd.handle_request()
-        print("Callback server stopped.")
+    def callback_headless(self) -> dict:
+        """Prompt the user for the API authorisation response URL.
 
-    return params
+        For instances where a browser is not available on the same machine.
 
+        Returns:
+            dict: Response parameters.
+        """
+        return TredictPy.params_from_path(input("Paste the URL here: "))
 
-def callback_headless() -> dict:
-    """Prompt the user for the API authorisation response URL.
+    def request_auth_code(self, headless: bool = False) -> None:
+        """Request an authorisation code.
 
-    For instances where a browser is not available on the same machine.
+        Provides a link to authorise on Tredict then either starts a callback server to capture the response or awaits
+        the URL to be entered for headless.
 
-    Returns:
-        dict: Response parameters.
-    """
-    return params_from_path(input("Paste the URL here: "))
+        Args:
+            headless (bool, optional): _description_. Defaults to False.
 
+        Raises:
+            APIException: _description_
+        """
 
-def request_auth_code(headless: bool = False) -> None:
+        user_uuid = str(uuid.uuid4())
 
-    user_uuid = str(uuid.uuid4())
-
-    print(
-        f"Open this URL to authorise: {config['auth_url']}?client_id={config['client_id']}&state={user_uuid}"
-    )
-
-    # Start the callback server or go headless
-    params = callback_headless() if headless else callback_server()
-
-    if "code" in params.keys():
         print(
-            "Authorisation complete!",
-            "Callback response:",
-            json.dumps(params, indent=4),
-            sep="\n",
-        )
-        save_config({"auth_code": params})
-    else:  # If code is not in the keys authorisation failed
-        print(
-            "Authorisation failed!",
-            "Callback response:",
-            json.dumps(params, indent=4),
-            sep="\n",
-        )
-        raise APIException(
-            f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
+            f"Open this URL to authorise: {self._config['auth_url']}?client_id={self._config['client_id']}&state={user_uuid}"
         )
 
+        # Start the callback server or go headless
+        params = self.callback_headless() if headless else self.callback_server()
 
-def request_user_access_token() -> None:
+        if "code" in params.keys():
+            print(
+                "Authorisation complete!",
+                "Callback response:",
+                json.dumps(params, indent=4),
+                sep="\n",
+            )
+            self.save_config({"auth_code": params})
+        else:  # If code is not in the keys authorisation failed
+            print(
+                "Authorisation failed!",
+                "Callback response:",
+                json.dumps(params, indent=4),
+                sep="\n",
+            )
+            raise APIException(
+                f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
+            )
 
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "accept": "application/json;charset=UTF-8",
-    }
+    def request_user_access_token(self, refresh: bool = False) -> None:
+        """Request a user access token using either an authorisation code or a refresh token.
 
-    data = {
-        "grant_type": "authorization_code",  # "refresh_token",
-        "code": config["auth_code"]["code"],
-        # "refresh_token": None,
-    }
+        Args:
+            refresh (bool, optional): Set to True to use a long lived refresh token. Defaults to False.
 
-    r = requests.post(
-        f"{config['token_url']}{config['token_append']}",
-        headers=headers,
-        auth=(config["client_id"], config["client_secret"]),
-        data=data,
-    )
+        Raises:
+            APIException: If there was an error requesting the user access token.
+        """
 
-    if r.status_code == 200:
-        print(
-            "User access token successfully retrieved!",
-            json.dumps(r.json(), indent=4),
-            sep="\n",
+        headers = {
+            "content-type": "application/x-www-form-urlencoded",
+            "accept": "application/json;charset=UTF-8",
+        }
+
+        data = {
+            "grant_type": "refresh_token" if refresh else "authorization_code",
+            "code": None if refresh else self._config["auth_code"]["code"],
+            "refresh_token": (
+                self._config["user_access_token"]["refresh_token"] if refresh else None
+            ),
+        }
+
+        r = requests.post(
+            f"{self._config['token_url']}{self._config['token_append']}",
+            headers=headers,
+            auth=(self._config["client_id"], self._config["client_secret"]),
+            data=data,
         )
-        save_config(
-            {
+
+        if r.status_code == 200:
+            print(
+                "User access token successfully retrieved!",
+                json.dumps(r.json(), indent=4),
+                sep="\n",
+            )
+
+            user_access_token = {
                 "user_access_token": r.json()
                 | {"expires_on": int(time.time() + r.json()["expires_in"])}
             }
+
+            if refresh:
+                user_access_token["user_access_token"].update(
+                    {"refresh_token": data["refresh_token"]}
+                )
+
+            self.save_config(user_access_token)
+        else:
+            # Handle the error codes correctly
+            print(
+                f"Retrieving User access token failed error {r.status_code} ({r.url})."
+            )
+            raise APIException(
+                f"Retrieving user access token failed error {r.status_code} ({r.url})."
+            )
+
+    def deregister(self) -> None:
+        """Deregister from the API.
+
+        Raises:
+            APIException: If there was an error deregistering.
+        """
+
+        headers = {
+            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+        }
+
+        r = requests.delete(
+            f"{self._config['token_url']}{self._config['token_append']}",
+            headers=headers,
         )
-    else:
-        # Handle the error codes correctly
-        print(f"Retrieving User access token failed error {r.status_code} ({r.url}).")
-        raise APIException(
-            f"Retrieving user access token failed error {r.status_code} ({r.url})."
-        )
+
+        if r.status_code == 200:
+            print("Successfully deregistered!")
+            self.save_config({"user_access_token": None, "auth_code": None})
+        else:
+            # Handle the error codes correctly
+            print(f"Deregistering failed error {r.status_code} ({r.url}).")
+            raise APIException(f"Deregistering failed error {r.status_code} ({r.url}).")
 
 
-def deregister() -> None:
+client = TredictPy()
 
-    headers = {
-        "authorization": f"bearer {config['user_access_token']['access_token']}",
-    }
+client.load_config()
 
-    r = requests.delete(
-        f"{config['token_url']}{config['token_append']}", headers=headers
-    )
+client.request_auth_code()
 
-    if r.status_code == 200:
-        print("Successfully deregistered!")
-        save_config({"user_access_token": None, "auth_code": None})
-    else:
-        # Handle the error codes correctly
-        print(f"Deregistering failed error {r.status_code} ({r.url}).")
-        raise APIException(f"Deregistering failed error {r.status_code} ({r.url}).")
+client.request_user_access_token(refresh=False)
 
+input("Press enter to refresh the user access token...")
 
-load_config()
-
-request_auth_code()
-
-request_user_access_token()
+client.request_user_access_token(refresh=True)
 
 input("Press enter to deregister...")
 
-deregister()
+client.deregister()
