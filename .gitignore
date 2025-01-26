@@ -3,3 +3,4 @@ pin
 api.kdbx
 config.json
 __pycache__
+*.ipynb

@@ -17,6 +17,7 @@ import requests
 import uuid
 import json
 import time
+from datetime import datetime, timezone
 
 import http.server
 from socketserver import TCPServer
@@ -256,19 +257,80 @@ class TredictPy:
             print(f"Deregistering failed error {r.status_code} ({r.url}).")
             raise APIException(f"Deregistering failed error {r.status_code} ({r.url}).")
 
+    def _list_endpoint(self, endpoint: str, params: dict) -> list:
+        """Make a request to a list endpoint.
 
-client = TredictPy()
+        Handles pagination.
 
-client.load_config()
+        Args:
+            endpoint (str): Name of the list endpoint.
+            params (dict): Parameters as required by the endpoint.
 
-client.request_auth_code()
+        Raises:
+            APIException: If the request fails.
 
-client.request_user_access_token(refresh=False)
+        Returns:
+            list: A list of the response pages.
+        """
 
-input("Press enter to refresh the user access token...")
+        headers = {
+            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "accept": "application/json;charset=UTF-8",
+        }
 
-client.request_user_access_token(refresh=True)
+        pages = []
+        url = f"{self._config['endpoint_base_url']}{endpoint}/{self._config['endpoint_append']}"
 
-input("Press enter to deregister...")
+        while True:
 
-client.deregister()
+            r = requests.get(
+                url,
+                headers=headers,
+                params=params,
+            )
+
+            if r.status_code == 200:
+                pages.append(r.json())
+
+                if "next" not in r.json()["_links"].keys():
+                    break
+                else:
+                    url = r.json()["_links"]["next"]
+                    # Also need to set params to None as next contains params
+                    params = None
+            else:
+                # Handle the error codes correctly
+                print(f"Request to {endpoint} failed error {r.status_code}. ({r.url}).")
+                raise APIException(
+                    f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
+                )
+
+        return pages
+
+    def activity_list(self, start_date: datetime = None, page_size: int = 500) -> list:
+        """Fetch a list of activities.
+
+        Args:
+            start_date (datetime, optional): Fetch activities starting from this date. Local times will be converted to
+            UTC. Defaults to None.
+            page_size (int, optional): Number of results per page, must be at least 50 and no more than 1000. Defaults
+            to 500.
+
+        Raises:
+            APIException: If the page size requested is invalid or the request fails.
+
+        Returns:
+            list: A list of dicts containing the individual activities.
+        """
+
+        if page_size < 50 or page_size > 1000:
+            raise APIException("Page size must be at least 50 and no more than 1000.")
+
+        params = {
+            "startDate": start_date.astimezone(timezone.utc).isoformat(),
+            "pageSize": page_size,
+        }
+
+        # Tidy pages to leave just an activity list
+
+        return self._list_endpoint("activityList", params)
