@@ -70,7 +70,7 @@ class TredictPy:
             [tuple(p.split("=")) for p in path[(path.index("?") + 1) :].split("&")]
         )
 
-    def callback_server(self) -> dict:
+    def _callback_server(self) -> dict:
         """Run a callback server to wait for the API authorisation response.
 
         Returns:
@@ -125,7 +125,7 @@ class TredictPy:
 
         return params
 
-    def callback_headless(self) -> dict:
+    def _callback_headless(self) -> dict:
         """Prompt the user for the API authorisation response URL.
 
         For instances where a browser is not available on the same machine.
@@ -155,7 +155,7 @@ class TredictPy:
         )
 
         # Start the callback server or go headless
-        params = self.callback_headless() if headless else self.callback_server()
+        params = self._callback_headless() if headless else self._callback_server()
 
         if "code" in params.keys():
             print(
