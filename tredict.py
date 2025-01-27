@@ -271,7 +271,9 @@ class TredictPy:
             )
 
             if r.status_code == 200:
-                pages.append(r.json())
+                pages.extend(
+                    r.json()["_embedded"][list(r.json()["_embedded"].keys())[0]]
+                )
 
                 if "next" not in r.json()["_links"].keys():
                     break
@@ -310,7 +312,5 @@ class TredictPy:
             "startDate": start_date.astimezone(timezone.utc).isoformat(),
             "pageSize": page_size,
         }
-
-        # Tidy pages to leave just an activity list
 
         return self._list_endpoint("activityList", params)
