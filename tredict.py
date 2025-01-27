@@ -309,7 +309,9 @@ class TredictPy:
             raise APIException("Page size must be at least 50 and no more than 1000.")
 
         params = {
-            "startDate": start_date.astimezone(timezone.utc).isoformat(),
+            "startDate": (
+                start_date.astimezone(timezone.utc).isoformat() if start_date else None
+            ),
             "pageSize": page_size,
         }
 
