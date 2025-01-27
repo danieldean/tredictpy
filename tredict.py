@@ -351,7 +351,7 @@ class TredictPy:
                 start_date.astimezone(timezone.utc).isoformat() if start_date else None
             ),
             "endDate": (
-                start_date.astimezone(timezone.utc).isoformat() if end_date else None
+                end_date.astimezone(timezone.utc).isoformat() if end_date else None
             ),
             "sportType": sport_type,
         }
