@@ -275,7 +275,10 @@ class TredictPy:
                     r.json()["_embedded"][list(r.json()["_embedded"].keys())[0]]
                 )
 
-                if "next" not in r.json()["_links"].keys():
+                if (
+                    "_links" not in r.json().keys()
+                    or "next" not in r.json()["_links"].keys()
+                ):
                     break
                 else:
                     url = r.json()["_links"]["next"]
@@ -316,3 +319,41 @@ class TredictPy:
         }
 
         return self._list_endpoint("activityList", params)
+
+    def planned_training_list(
+        self,
+        start_date: datetime = None,
+        end_date: datetime = None,
+        sport_type: str = None,
+    ) -> list:
+        """Fetch a list of planned training.
+
+        Args:
+            start_date (datetime, optional): Fetch planned training starting from this date. Local times will be
+            converted to UTC. Defaults to None.
+            end_date (datetime, optional): Fetch planned training ending at this date. Local times will be converted to
+            UTC. Defaults to None.
+            sport_type (str, optional): Fetch planned training for only this sport. Possible values are 'running',
+            'cycling', 'swimming', 'misc'. Default to None.
+
+        Raises:
+            APIException: If the request fails or the sport type specified is invalid.
+
+        Returns:
+            list: A list of dicts containing the individual activities.
+        """
+
+        if sport_type not in ["running", "cycling", "swimming", "misc"]:
+            APIException(f"Invalid sport type '{sport_type}' specified!")
+
+        params = {
+            "startDate": (
+                start_date.astimezone(timezone.utc).isoformat() if start_date else None
+            ),
+            "endDate": (
+                start_date.astimezone(timezone.utc).isoformat() if end_date else None
+            ),
+            "sportType": sport_type,
+        }
+
+        return self._list_endpoint("plannedTrainingList", params)
