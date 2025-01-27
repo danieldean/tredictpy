@@ -158,20 +158,9 @@ class TredictPy:
         params = self._callback_headless() if headless else self._callback_server()
 
         if "code" in params.keys():
-            print(
-                "Authorisation complete!",
-                "Callback response:",
-                json.dumps(params, indent=4),
-                sep="\n",
-            )
+            print("Authorisation complete!")
             self.save_config({"auth_code": params})
         else:  # If code is not in the keys authorisation failed
-            print(
-                "Authorisation failed!",
-                "Callback response:",
-                json.dumps(params, indent=4),
-                sep="\n",
-            )
             raise APIException(
                 f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
             )
@@ -207,11 +196,7 @@ class TredictPy:
         )
 
         if r.status_code == 200:
-            print(
-                "User access token successfully retrieved!",
-                json.dumps(r.json(), indent=4),
-                sep="\n",
-            )
+            print("User access token successfully retrieved!")
 
             user_access_token = {
                 "user_access_token": r.json()
@@ -226,9 +211,6 @@ class TredictPy:
             self.save_config(user_access_token)
         else:
             # Handle the error codes correctly
-            print(
-                f"Retrieving User access token failed error {r.status_code} ({r.url})."
-            )
             raise APIException(
                 f"Retrieving user access token failed error {r.status_code} ({r.url})."
             )
@@ -254,7 +236,6 @@ class TredictPy:
             self.save_config({"user_access_token": None, "auth_code": None})
         else:
             # Handle the error codes correctly
-            print(f"Deregistering failed error {r.status_code} ({r.url}).")
             raise APIException(f"Deregistering failed error {r.status_code} ({r.url}).")
 
     def _list_endpoint(self, endpoint: str, params: dict) -> list:
@@ -300,7 +281,6 @@ class TredictPy:
                     params = None
             else:
                 # Handle the error codes correctly
-                print(f"Request to {endpoint} failed error {r.status_code}. ({r.url}).")
                 raise APIException(
                     f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
                 )
