@@ -357,3 +357,54 @@ class TredictPy:
         }
 
         return self._list_endpoint("plannedTrainingList", params)
+
+    def _download_endpoint(
+        self, endpoint: str, id: str = None, params: dict = None
+    ) -> dict:
+        """Make a request to a download endpoint (not a download file endpoint).
+
+        Args:
+            endpoint (str): Name of the list endpoint.
+            id (str, optional): Optional ID, currently only applicable for activities. Defaults to None.
+            params (dict, optional): Parameters if required for the request. Defaults to None.
+
+        Raises:
+            APIException: If the request fails.
+
+        Returns:
+            dict: A dict containing the response.
+        """
+
+        headers = {
+            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "accept": "application/json;charset=UTF-8",
+        }
+
+        url = f"{self._config['endpoint_base_url']}{endpoint}/{self._config['endpoint_append']}"
+        url = f"{url}/{id}" if url else url  # Append the ID if there is one
+
+        r = requests.get(
+            url,
+            headers=headers,
+            params=params,
+        )
+
+        if r.status_code == 200:
+            return r.json()
+
+        else:
+            # Handle the error codes correctly
+            raise APIException(
+                f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
+            )
+
+    def activity_download(self, id: str) -> dict:
+        """Download an activity as JSON.
+
+        Args:
+            id (str): ID of the activity. If unknown this can be found with activity_list().
+
+        Returns:
+            dict: A dict containing the activity.
+        """
+        return self._download_endpoint("activity", id=id)
