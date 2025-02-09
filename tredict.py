@@ -381,7 +381,7 @@ class TredictPy:
         }
 
         url = f"{self._config['endpoint_base_url']}{endpoint}/{self._config['endpoint_append']}"
-        url = f"{url}/{id}" if url else url  # Append the ID if there is one
+        url = f"{url}/{id}" if id else url  # Append the ID if there is one
 
         r = requests.get(
             url,
