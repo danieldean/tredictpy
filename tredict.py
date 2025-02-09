@@ -404,6 +404,9 @@ class TredictPy:
         Args:
             id (str): ID of the activity. If unknown this can be found with activity_list().
 
+        Raises:
+            APIException: If the request fails.
+
         Returns:
             dict: A dict containing the activity.
         """
@@ -411,6 +414,9 @@ class TredictPy:
 
     def bodyvalues_download(self) -> dict:
         """Download body values as JSON.
+
+        Raises:
+            APIException: If the request fails.
 
         Returns:
             dict: A dict containing the body values.
@@ -423,6 +429,9 @@ class TredictPy:
         Params:
             sport_type (str, optional): Fetch planned training for only this sport. Possible values are 'running',
             'cycling', 'swimming', 'misc'. Default to None.
+
+        Raises:
+            APIException: If the request fails or the sport type is invalid.
 
         Returns:
             dict: A dict containing the capacity values.
@@ -443,6 +452,9 @@ class TredictPy:
         Params:
             sport_type (str, optional): Fetch planned training for only this sport. Possible values are 'running',
             'cycling', 'swimming', 'misc'. Default to None.
+
+        Raises:
+            APIException: If the request fails or the sport type is invalid.
 
         Returns:
             dict: A dict containing the zones.
