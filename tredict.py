@@ -408,3 +408,51 @@ class TredictPy:
             dict: A dict containing the activity.
         """
         return self._download_endpoint("activity", id=id)
+
+    def bodyvalues_download(self) -> dict:
+        """Download body values as JSON.
+
+        Returns:
+            dict: A dict containing the body values.
+        """
+        return self._download_endpoint("bodyvalues")
+
+    def capacity_download(self, sport_type: str = None) -> dict:
+        """Download capacity values as JSON.
+
+        Params:
+            sport_type (str, optional): Fetch planned training for only this sport. Possible values are 'running',
+            'cycling', 'swimming', 'misc'. Default to None.
+
+        Returns:
+            dict: A dict containing the capacity values.
+        """
+
+        if sport_type not in ["running", "cycling", "swimming", "misc"]:
+            APIException(f"Invalid sport type '{sport_type}' specified!")
+
+        params = {
+            "sportType": sport_type,
+        }
+
+        return self._download_endpoint("capacity", params=params)
+
+    def zones_download(self, sport_type: str = None) -> dict:
+        """Download zones as JSON.
+
+        Params:
+            sport_type (str, optional): Fetch planned training for only this sport. Possible values are 'running',
+            'cycling', 'swimming', 'misc'. Default to None.
+
+        Returns:
+            dict: A dict containing the zones.
+        """
+
+        if sport_type not in ["running", "cycling", "swimming", "misc"]:
+            APIException(f"Invalid sport type '{sport_type}' specified!")
+
+        params = {
+            "sportType": sport_type,
+        }
+
+        return self._download_endpoint("zones", params=params)
