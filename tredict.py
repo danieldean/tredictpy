@@ -468,3 +468,112 @@ class TredictPy:
         }
 
         return self._download_endpoint("zones", params=params)
+
+    def _file_download_endpoint(
+        self, endpoint: str, id: str, params: dict = None, file_type: str = None
+    ) -> bytes:
+        """Make a request to a file download endpoint.
+
+        Args:
+            endpoint (str): Name of the list endpoint.
+            id (str): ID for planned training or activity to download.
+            params (dict, optional): Parameters if required for the request. Defaults to None.
+            file_type (str, optional): Type of file to download, either 'json' or 'fit'. Only applicable to planned
+            training. Defaults to None.
+
+        Raises:
+            APIException: If the request fails or the file type is invalid
+
+        Returns:
+            bytes: Binary content of the response which could be JSON or a FIT file.
+        """
+
+        if file_type and (file_type not in ["json", "fit"] or endpoint == "activity"):
+            APIException(
+                f"Invalid file type '{file_type}' specified or file type not applicable!"
+            )
+
+        headers = {
+            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "accept": "application/json;charset=UTF-8",
+        }
+
+        url = f"{self._config['endpoint_base_url']}{endpoint}/file/{self._config['endpoint_append']}"
+        url = (
+            f"{url}/{file_type}" if file_type else url
+        )  # Append the type if there is one
+        url = f"{url}/{id}"
+
+        r = requests.get(
+            url,
+            headers=headers,
+            params=params,
+        )
+
+        if r.status_code == 200:
+            return r.content
+        else:
+            # Handle the error codes correctly
+            raise APIException(
+                f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
+            )
+
+    def planned_training_download(
+        self, id: str, language: str = "en", extra_values: bool = False
+    ) -> dict:
+        """Download planned training as JSON.
+
+        Params:
+            id (str): ID of the planned training. If unknown this can be found with planned_training_list().
+            language (str, optional): Use this language for the default workout name. Either 'en' or 'de'. Defaults to
+            'en'.
+            extra_values (bool, optional): Include extra values not in the Garmin specification. Extra value property
+            names are: 'targetProgressionType', 'extraValueCadence', 'extraValueHeartrate', 'extraValueSpeed' and
+            'extraValuePower'. Defaults to False.
+
+        Raises:
+            APIException: If the request fails or the language is invalid.
+
+        Returns:
+            dict: A dict containing the planned training.
+        """
+
+        if language not in ["en", "de"]:
+            APIException(f"Invalid language '{language}' specified!")
+
+        params = {"language": language, "extraValues": 1 if extra_values else 0}
+
+        # This one is actually a file endpoint but returns JSON.
+        return json.loads(
+            self._file_download_endpoint(
+                "plannedTraining", params=params, id=id, file_type="json"
+            )
+        )
+
+    def planned_training_file_download(self, id: str) -> bytes:
+        """Download planned training as a FIT file.
+
+        Params:
+            id (str): ID of the planned training. If unknown this can be found with planned_training_list().
+
+        Raises:
+            APIException: If the request fails.
+
+        Returns:
+            bytes: The fit file.
+        """
+        return self._file_download_endpoint("plannedTraining", id=id, file_type="fit")
+
+    def activity_file_download(self, id: str) -> bytes:
+        """Download an activity as a FIT file.
+
+        Params:
+            id (str): ID of the activity. If unknown this can be found with activity_list().
+
+        Raises:
+            APIException: If the request fails.
+
+        Returns:
+            bytes: The fit file.
+        """
+        return self._file_download_endpoint("activity", id=id)
