@@ -40,9 +40,14 @@ class TredictPy:
         """Initialise a new instance."""
         self._config = None
 
-    def load_config(self) -> None:
-        """Load the config from file."""
-        with open("./config.json", "rt") as f:
+    def load_config(self, config_file: str = "tredict-config.json") -> None:
+        """Load the config from file.
+
+        Args:
+            config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
+        """
+        self._config_file = config_file
+        with open(self._config_file, "rt") as f:
             self._config = json.loads(f.read())
 
     def save_config(self, d: dict = None) -> None:
@@ -53,7 +58,7 @@ class TredictPy:
         """
         if d is not None:
             self._config.update(d)
-        with open("./config.json", "wt") as f:
+        with open(self._config_file, "wt") as f:
             f.write(json.dumps(self._config, indent=4))
 
     @staticmethod
