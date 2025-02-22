@@ -577,3 +577,63 @@ class TredictPy:
             bytes: The fit file.
         """
         return self._file_download_endpoint("activity", id=id)
+
+    def activity_upload(
+        self, file_path: str, activity_name: str = None, activity_notes: str = None
+    ) -> dict:
+        """Upload an activity as either a FIT or TCX activity file (FIT is preferred).
+
+        Args:
+            file_path (str): Path to the activity file.
+            activity_name (str, optional): Name to use for the activity. Defaults to None.
+            activity_notes (str, optional): Note to add to the activity. Defaults to None.
+
+        Raises:
+            APIException: If the request fails or the activity file is not of the correct type.
+
+        Returns:
+            dict: A dict containing either an on success (with ID of the upload) or on error response (with an ID if
+            the failure is due to a duplicate).
+        """
+
+        with open(file_path, "rb") as f:
+            activity_file = f.read()
+
+        if activity_file[8:12].decode() == ".FIT":
+            file_type = ".fit"
+        elif activity_file[0:5] == "<?xml":
+            file_type = ".tcx"  # Probably - it is at least XML
+        else:
+            APIException(
+                f"Unable to upload file as it is not a FIT or TCX activity file!"
+            )
+
+        headers = {
+            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "accept": "application/json;charset=UTF-8",
+        }
+
+        url = f"{self._config['endpoint_base_url']}activity/upload/{self._config['endpoint_append']}"
+
+        files = {
+            "file": (
+                file_path.split("/")[-1],
+                open(file_path, "rb"),
+            ),
+            "name": (None, activity_name),
+            "notes": (None, activity_notes),
+        }
+
+        # r = requests.Request("POST", url, headers=headers, files=files)
+        # print(r.prepare().body.decode("unicode_escape"))
+        # return
+
+        r = requests.post(url, headers=headers, files=files)
+
+        if r.status_code == 200:
+            return r.json()
+        else:
+            # Handle the error codes correctly
+            raise APIException(
+                f"Activity file upload failed error {r.status_code}. ({r.url})."
+            )
