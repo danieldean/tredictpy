@@ -602,7 +602,7 @@ class TredictPy:
         """
 
         with open(file_path, "rb") as f:
-            activity_file = f.read()
+            activity_file = f.read(12)
 
         if activity_file[8:12].decode() == ".FIT":
             file_type = ".fit"
