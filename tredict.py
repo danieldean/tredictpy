@@ -642,3 +642,72 @@ class TredictPy:
             raise APIException(
                 f"Activity file upload failed error {r.status_code}. ({r.url})."
             )
+
+    def bodyvalues_upload(
+        self,
+        values_date: datetime = datetime.now(timezone.utc),
+        resting_heart_rate: int = None,
+        weight: float = None,
+        height: int = None,
+        body_fat_percent: float = None,
+        body_water_percent: float = None,
+        body_muscle_percent: float = None,
+    ) -> dict:
+        """Upload body values.
+
+        Args:
+            values_date (datetime, optional): Timestamp for the upload including timezone if applicable. Defaults to now
+            in UTC.
+            resting_heart_rate (int, optional): Value for resting heart rate (bpm). Defaults to None.
+            weight (float, optional): Weight in kilograms. Defaults to None.
+            height (fl0at, optional): height in centimetres. Defaults to None.
+            body_fat_percent (float, optional): Body fat percentage. Defaults to None.
+            body_water_percent (float, optional): Body water percentage. Defaults to None.
+            body_muscle_percent (float, optional): Body muscle mass percentage. Defaults to None.
+
+        Raises:
+            APIException: If the request fails.
+
+        Returns:
+            dict: Most likely None.
+        """
+
+        headers = {
+            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "accept": "application/json;charset=UTF-8",
+            "content-type": "application/json;charset=UTF-8",
+        }
+
+        url = f"{self._config['endpoint_base_url']}bodyvalues/{self._config['endpoint_append']}"
+
+        data = {
+            "bodyvalues": [
+                {
+                    "timestamp": (values_date.astimezone(timezone.utc).isoformat()),
+                    "timezoneOffsetInSeconds": int(
+                        values_date.utcoffset().total_seconds()
+                    ),
+                    "restingHeartrate": resting_heart_rate,
+                    "weightInKilograms": weight,
+                    "bodyHeightInCentimeter": height,
+                    "bodyFatInPercent": body_fat_percent,
+                    "bodyWaterInPercent": body_water_percent,
+                    "muscleMassInPercent": body_muscle_percent,
+                }
+            ],
+        }
+
+        # Delete the values not supplied
+        for k, v in list(data["bodyvalues"][0].items()):
+            if v is None:
+                del data["bodyvalues"][0][k]
+
+        r = requests.post(url, headers=headers, json=data)
+
+        if r.status_code == 200:
+            return  # Upload was successful but nothing is returned
+        else:
+            # Handle the error codes correctly
+            raise APIException(
+                f"Body values upload failed error {r.status_code}. ({r.url})."
+            )
