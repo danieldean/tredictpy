@@ -5,3 +5,5 @@ api.kdbx
 !example-*-config.json
 __pycache__
 *.ipynb
+*.html
+*.js
