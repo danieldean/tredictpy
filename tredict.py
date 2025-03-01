@@ -727,7 +727,7 @@ class TredictPy:
         body_fat_percent: float = None,
         body_water_percent: float = None,
         body_muscle_percent: float = None,
-    ) -> dict:
+    ):
         """Upload body values.
 
         Args:
@@ -742,9 +742,6 @@ class TredictPy:
 
         Raises:
             APIException: If the request fails.
-
-        Returns:
-            dict: Most likely None.
         """
 
         if (
