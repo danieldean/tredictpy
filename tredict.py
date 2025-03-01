@@ -45,9 +45,9 @@ class TredictPy:
         Raises:
             APIException: If the config does not contain all mandatory fields.
         """
-        self.load_config(config_file=config_file)
+        self._load_config(config_file=config_file)
 
-    def load_config(self, config_file: str = "tredict-config.json") -> None:
+    def _load_config(self, config_file: str = "tredict-config.json") -> None:
         """Load the config from file.
 
         Args:
@@ -81,7 +81,7 @@ class TredictPy:
                 "Config does not contain mandatory fields. Check example."
             )
 
-    def save_config(self, d: dict = None) -> None:
+    def _save_config(self, d: dict = None) -> None:
         """Save and optionally update the config to file.
 
         Args:
@@ -93,7 +93,7 @@ class TredictPy:
             f.write(json.dumps(self._config, indent=4))
 
     @staticmethod
-    def params_from_path(path: str) -> dict:
+    def _params_from_path(path: str) -> dict:
         """Split a query string from a URL path and create a dict of the key and value parameter pairs.
 
         Args:
@@ -127,7 +127,7 @@ class TredictPy:
                     self.end_headers()
 
                     # Create a dict of the params, should be code and state
-                    params = TredictPy.params_from_path(self.path)
+                    params = TredictPy._params_from_path(self.path)
 
                     self.wfile.write("Authorisation complete!".encode("utf-8"))
                     done = True
@@ -138,7 +138,7 @@ class TredictPy:
                     self.end_headers()
 
                     # Create a dict of the params, should be code and state
-                    params = TredictPy.params_from_path(self.path)
+                    params = TredictPy._params_from_path(self.path)
 
                     self.wfile.write("Authorisation failed!".encode("utf-8"))
                     done = True
@@ -169,7 +169,7 @@ class TredictPy:
         Returns:
             dict: Response parameters.
         """
-        return TredictPy.params_from_path(input("Paste the URL here: "))
+        return TredictPy._params_from_path(input("Paste the URL here: "))
 
     def request_auth_code(self, headless: bool = False) -> None:
         """Request an authorisation code.
@@ -195,7 +195,7 @@ class TredictPy:
 
         if "code" in params.keys() and params["state"] == user_uuid:
             print("Authorisation complete!")
-            self.save_config({"auth_code": params})
+            self._save_config({"auth_code": params})
         elif "code" in params.keys() and params["state"] != user_uuid:
             raise APIException(
                 f"Authorisation failed! Returned state does not match supplied state."
@@ -261,7 +261,7 @@ class TredictPy:
                     {"refresh_token": data["refresh_token"]}
                 )
 
-            self.save_config(user_access_token)
+            self._save_config(user_access_token)
         else:
             raise APIException(
                 f"Retrieving user access token failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
@@ -291,7 +291,7 @@ class TredictPy:
 
         if r.status_code == 200:
             print("Successfully deregistered!")
-            self.save_config({"user_access_token": None, "auth_code": None})
+            self._save_config({"user_access_token": None, "auth_code": None})
         else:
             raise APIException(
                 f"Deregistering failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
