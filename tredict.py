@@ -219,9 +219,8 @@ class TredictPy:
 
             self.save_config(user_access_token)
         else:
-            # Handle the error codes correctly
             raise APIException(
-                f"Retrieving user access token failed error {r.status_code} ({r.url})."
+                f"Retrieving user access token failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
             )
 
     def deregister(self) -> None:
@@ -244,8 +243,9 @@ class TredictPy:
             print("Successfully deregistered!")
             self.save_config({"user_access_token": None, "auth_code": None})
         else:
-            # Handle the error codes correctly
-            raise APIException(f"Deregistering failed error {r.status_code} ({r.url}).")
+            raise APIException(
+                f"Deregistering failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+            )
 
     def _list_endpoint(self, endpoint: str, params: dict) -> list:
         """Make a request to a list endpoint.
@@ -294,9 +294,8 @@ class TredictPy:
                     # Also need to set params to None as next contains params
                     params = None
             else:
-                # Handle the error codes correctly
                 raise APIException(
-                    f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
+                    f"Request to {endpoint} failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
                 )
 
         return pages
@@ -402,9 +401,8 @@ class TredictPy:
             return r.json()
 
         else:
-            # Handle the error codes correctly
             raise APIException(
-                f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
+                f"Request to {endpoint} failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
             )
 
     def activity_download(self, id: str) -> dict:
@@ -522,9 +520,8 @@ class TredictPy:
         if r.status_code == 200:
             return r.content
         else:
-            # Handle the error codes correctly
             raise APIException(
-                f"Request to {endpoint} failed error {r.status_code}. ({r.url})."
+                f"Request to {endpoint} failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
             )
 
     def planned_training_download(
@@ -644,7 +641,7 @@ class TredictPy:
         else:
             # Handle the error codes correctly
             raise APIException(
-                f"Activity file upload failed error {r.status_code}. ({r.url})."
+                f"Activity file upload failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
             )
 
     def bodyvalues_upload(
@@ -711,7 +708,6 @@ class TredictPy:
         if r.status_code == 200:
             return  # Upload was successful but nothing is returned
         else:
-            # Handle the error codes correctly
             raise APIException(
-                f"Body values upload failed error {r.status_code}. ({r.url})."
+                f"Body values upload failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
             )
