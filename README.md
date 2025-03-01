@@ -23,3 +23,6 @@ client.activity_list()
 
 # Deregister
 client.deregister()
+```
+
+View the docs at: [tredictpy docs](https://danieldean.github.io/tredictpy)
