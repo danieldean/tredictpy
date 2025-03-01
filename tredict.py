@@ -36,19 +36,50 @@ class APIException(Exception):
 class TredictPy:
     """A straightforward script to authorise, authenticate and interact with Tredict."""
 
-    def __init__(self):
-        """Initialise a new instance."""
-        self._config = None
+    def __init__(self, config_file: str = "tredict-config.json"):
+        """Initialise a new instance.
+
+        Args:
+            config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
+
+        Raises:
+            APIException: If the config does not contain all mandatory fields."
+        """
+        self.load_config(config_file=config_file)
 
     def load_config(self, config_file: str = "tredict-config.json") -> None:
         """Load the config from file.
 
         Args:
             config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
+
+        Raises:
+            APIException: If the config does not contain all mandatory fields."
         """
         self._config_file = config_file
         with open(self._config_file, "rt") as f:
             self._config = json.loads(f.read())
+
+        if not set(
+            [
+                "auth_url",
+                "token_url",
+                "token_append",
+                "endpoint_base_url",
+                "endpoint_append",
+                "service_id",
+                "client_id",
+                "client_secret",
+                "auth_code_expires_in",
+                "renewal_buffer",
+                "error_codes",
+            ]
+        ).issubset(self._config.keys()):
+            self._config_file = None
+            self._config = None
+            raise APIException(
+                "Config does not contain mandatory fields. Check example."
+            )
 
     def save_config(self, d: dict = None) -> None:
         """Save and optionally update the config to file.
@@ -184,6 +215,19 @@ class TredictPy:
             APIException: If there was an error requesting the user access token.
         """
 
+        if not refresh and (
+            self._config["auth_code"] is None or "auth_code" not in self._config.keys()
+        ):
+            raise APIException("You must request an authorisation code first.")
+
+        if refresh and (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException(
+                "You must request a user access token with an authorisation code before you can refresh."
+            )
+
         headers = {
             "content-type": "application/x-www-form-urlencoded",
             "accept": "application/json;charset=UTF-8",
@@ -230,6 +274,12 @@ class TredictPy:
             APIException: If there was an error deregistering.
         """
 
+        if (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException("You must request a user access token first.")
+
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
         }
@@ -262,6 +312,12 @@ class TredictPy:
         Returns:
             list: A list of the response pages.
         """
+
+        if (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException("You must request a user access token first.")
 
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
@@ -383,6 +439,12 @@ class TredictPy:
             dict: A dict containing the response.
         """
 
+        if (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException("You must request a user access token first.")
+
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
             "accept": "application/json;charset=UTF-8",
@@ -495,6 +557,12 @@ class TredictPy:
             bytes: Binary content of the response which could be JSON or a FIT file.
         """
 
+        if (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException("You must request a user access token first.")
+
         if file_type and (file_type not in ["json", "fit"] or endpoint == "activity"):
             APIException(
                 f"Invalid file type '{file_type}' specified or file type not applicable!"
@@ -602,6 +670,12 @@ class TredictPy:
             the failure is due to a duplicate).
         """
 
+        if (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException("You must request a user access token first.")
+
         with open(file_path, "rb") as f:
             activity_file = f.read(12)
 
@@ -672,6 +746,12 @@ class TredictPy:
         Returns:
             dict: Most likely None.
         """
+
+        if (
+            self._config["user_access_token"] is None
+            or "user_access_token" not in self._config.keys()
+        ):
+            raise APIException("You must request a user access token first.")
 
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
