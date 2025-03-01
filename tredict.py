@@ -178,10 +178,10 @@ class TredictPy:
         the URL to be entered for headless.
 
         Args:
-            headless (bool, optional): _description_. Defaults to False.
+            headless (bool, optional): Run in headless mode. Defaults to False.
 
         Raises:
-            APIException: _description_
+            APIException: If the returned and supplied sates do not match or the authorisation failed.
         """
 
         user_uuid = str(uuid.uuid4())
