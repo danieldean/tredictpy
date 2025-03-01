@@ -43,7 +43,7 @@ class TredictPy:
             config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
 
         Raises:
-            APIException: If the config does not contain all mandatory fields."
+            APIException: If the config does not contain all mandatory fields.
         """
         self.load_config(config_file=config_file)
 
@@ -54,7 +54,7 @@ class TredictPy:
             config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
 
         Raises:
-            APIException: If the config does not contain all mandatory fields."
+            APIException: If the config does not contain all mandatory fields.
         """
         self._config_file = config_file
         with open(self._config_file, "rt") as f:
