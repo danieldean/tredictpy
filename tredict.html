@@ -36,15 +36,6 @@
                                 <a class="function" href="#TredictPy.__init__">TredictPy</a>
                         </li>
                         <li>
-                                <a class="function" href="#TredictPy.load_config">load_config</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#TredictPy.save_config">save_config</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#TredictPy.params_from_path">params_from_path</a>
-                        </li>
-                        <li>
                                 <a class="function" href="#TredictPy.request_auth_code">request_auth_code</a>
                         </li>
                         <li>
@@ -155,18 +146,18 @@ tredict    </h1>
 </span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">            config_file (str, optional): Path of the config file to load. Defaults to &quot;tredict-config.json&quot;.</span>
 </span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>
 </span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">        Raises:</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.&quot;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.</span>
 </span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">)</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">)</span>
 </span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tredict-config.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>    <span class="k">def</span> <span class="nf">_load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tredict-config.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the config from file.</span>
 </span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
 </span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="sd">        Args:</span>
 </span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="sd">            config_file (str, optional): Path of the config file to load. Defaults to &quot;tredict-config.json&quot;.</span>
 </span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
 </span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">        Raises:</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.&quot;</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.</span>
 </span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span> <span class="o">=</span> <span class="n">config_file</span>
 </span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -193,7 +184,7 @@ tredict    </h1>
 </span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>                <span class="s2">&quot;Config does not contain mandatory fields. Check example.&quot;</span>
 </span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>            <span class="p">)</span>
 </span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>    <span class="k">def</span> <span class="nf">_save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Save and optionally update the config to file.</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">        Args:</span>
@@ -205,7 +196,7 @@ tredict    </h1>
 </span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
 </span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
 </span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>    <span class="k">def</span> <span class="nf">params_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>    <span class="k">def</span> <span class="nf">_params_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Split a query string from a URL path and create a dict of the key and value parameter pairs.</span>
 </span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">        Args:</span>
@@ -239,7 +230,7 @@ tredict    </h1>
 </span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
 </span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>
 </span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>                    <span class="c1"># Create a dict of the params, should be code and state</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">_params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 </span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>
 </span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Authorisation complete!&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 </span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
@@ -250,7 +241,7 @@ tredict    </h1>
 </span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
 </span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
 </span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>                    <span class="c1"># Create a dict of the params, should be code and state</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">_params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 </span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>
 </span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Authorisation failed!&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 </span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
@@ -281,7 +272,7 @@ tredict    </h1>
 </span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a><span class="sd">        Returns:</span>
 </span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a><span class="sd">            dict: Response parameters.</span>
 </span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>        <span class="k">return</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">params_from_path</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Paste the URL here: &quot;</span><span class="p">))</span>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>        <span class="k">return</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">_params_from_path</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Paste the URL here: &quot;</span><span class="p">))</span>
 </span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a>
 </span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>    <span class="k">def</span> <span class="nf">request_auth_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headless</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Request an authorisation code.</span>
@@ -307,7 +298,7 @@ tredict    </h1>
 </span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>
 </span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>        <span class="k">if</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">user_uuid</span><span class="p">:</span>
 </span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authorisation complete!&quot;</span><span class="p">)</span>
-</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">({</span><span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
+</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">({</span><span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
 </span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>        <span class="k">elif</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">user_uuid</span><span class="p">:</span>
 </span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>                <span class="sa">f</span><span class="s2">&quot;Authorisation failed! Returned state does not match supplied state.&quot;</span>
@@ -373,7 +364,7 @@ tredict    </h1>
 </span><span id="L-261"><a href="#L-261"><span class="linenos">261</span></a>                    <span class="p">{</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">]}</span>
 </span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a>                <span class="p">)</span>
 </span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>
-</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="n">user_access_token</span><span class="p">)</span>
+</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">(</span><span class="n">user_access_token</span><span class="p">)</span>
 </span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>                <span class="sa">f</span><span class="s2">&quot;Retrieving user access token failed error </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;error_codes&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)]</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -403,7 +394,7 @@ tredict    </h1>
 </span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a>
 </span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a>        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
 </span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully deregistered!&quot;</span><span class="p">)</span>
-</span><span id="L-294"><a href="#L-294"><span class="linenos">294</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">({</span><span class="s2">&quot;user_access_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+</span><span id="L-294"><a href="#L-294"><span class="linenos">294</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">({</span><span class="s2">&quot;user_access_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
 </span><span id="L-295"><a href="#L-295"><span class="linenos">295</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="L-296"><a href="#L-296"><span class="linenos">296</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="L-297"><a href="#L-297"><span class="linenos">297</span></a>                <span class="sa">f</span><span class="s2">&quot;Deregistering failed error </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;error_codes&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)]</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -958,18 +949,18 @@ tredict    </h1>
 </span><span id="TredictPy-44"><a href="#TredictPy-44"><span class="linenos"> 44</span></a><span class="sd">            config_file (str, optional): Path of the config file to load. Defaults to &quot;tredict-config.json&quot;.</span>
 </span><span id="TredictPy-45"><a href="#TredictPy-45"><span class="linenos"> 45</span></a>
 </span><span id="TredictPy-46"><a href="#TredictPy-46"><span class="linenos"> 46</span></a><span class="sd">        Raises:</span>
-</span><span id="TredictPy-47"><a href="#TredictPy-47"><span class="linenos"> 47</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.&quot;</span>
+</span><span id="TredictPy-47"><a href="#TredictPy-47"><span class="linenos"> 47</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.</span>
 </span><span id="TredictPy-48"><a href="#TredictPy-48"><span class="linenos"> 48</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TredictPy-49"><a href="#TredictPy-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">)</span>
+</span><span id="TredictPy-49"><a href="#TredictPy-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">)</span>
 </span><span id="TredictPy-50"><a href="#TredictPy-50"><span class="linenos"> 50</span></a>
-</span><span id="TredictPy-51"><a href="#TredictPy-51"><span class="linenos"> 51</span></a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tredict-config.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TredictPy-51"><a href="#TredictPy-51"><span class="linenos"> 51</span></a>    <span class="k">def</span> <span class="nf">_load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tredict-config.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="TredictPy-52"><a href="#TredictPy-52"><span class="linenos"> 52</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the config from file.</span>
 </span><span id="TredictPy-53"><a href="#TredictPy-53"><span class="linenos"> 53</span></a>
 </span><span id="TredictPy-54"><a href="#TredictPy-54"><span class="linenos"> 54</span></a><span class="sd">        Args:</span>
 </span><span id="TredictPy-55"><a href="#TredictPy-55"><span class="linenos"> 55</span></a><span class="sd">            config_file (str, optional): Path of the config file to load. Defaults to &quot;tredict-config.json&quot;.</span>
 </span><span id="TredictPy-56"><a href="#TredictPy-56"><span class="linenos"> 56</span></a>
 </span><span id="TredictPy-57"><a href="#TredictPy-57"><span class="linenos"> 57</span></a><span class="sd">        Raises:</span>
-</span><span id="TredictPy-58"><a href="#TredictPy-58"><span class="linenos"> 58</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.&quot;</span>
+</span><span id="TredictPy-58"><a href="#TredictPy-58"><span class="linenos"> 58</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.</span>
 </span><span id="TredictPy-59"><a href="#TredictPy-59"><span class="linenos"> 59</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="TredictPy-60"><a href="#TredictPy-60"><span class="linenos"> 60</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span> <span class="o">=</span> <span class="n">config_file</span>
 </span><span id="TredictPy-61"><a href="#TredictPy-61"><span class="linenos"> 61</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -996,7 +987,7 @@ tredict    </h1>
 </span><span id="TredictPy-82"><a href="#TredictPy-82"><span class="linenos"> 82</span></a>                <span class="s2">&quot;Config does not contain mandatory fields. Check example.&quot;</span>
 </span><span id="TredictPy-83"><a href="#TredictPy-83"><span class="linenos"> 83</span></a>            <span class="p">)</span>
 </span><span id="TredictPy-84"><a href="#TredictPy-84"><span class="linenos"> 84</span></a>
-</span><span id="TredictPy-85"><a href="#TredictPy-85"><span class="linenos"> 85</span></a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TredictPy-85"><a href="#TredictPy-85"><span class="linenos"> 85</span></a>    <span class="k">def</span> <span class="nf">_save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="TredictPy-86"><a href="#TredictPy-86"><span class="linenos"> 86</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Save and optionally update the config to file.</span>
 </span><span id="TredictPy-87"><a href="#TredictPy-87"><span class="linenos"> 87</span></a>
 </span><span id="TredictPy-88"><a href="#TredictPy-88"><span class="linenos"> 88</span></a><span class="sd">        Args:</span>
@@ -1008,7 +999,7 @@ tredict    </h1>
 </span><span id="TredictPy-94"><a href="#TredictPy-94"><span class="linenos"> 94</span></a>            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
 </span><span id="TredictPy-95"><a href="#TredictPy-95"><span class="linenos"> 95</span></a>
 </span><span id="TredictPy-96"><a href="#TredictPy-96"><span class="linenos"> 96</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="TredictPy-97"><a href="#TredictPy-97"><span class="linenos"> 97</span></a>    <span class="k">def</span> <span class="nf">params_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="TredictPy-97"><a href="#TredictPy-97"><span class="linenos"> 97</span></a>    <span class="k">def</span> <span class="nf">_params_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 </span><span id="TredictPy-98"><a href="#TredictPy-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Split a query string from a URL path and create a dict of the key and value parameter pairs.</span>
 </span><span id="TredictPy-99"><a href="#TredictPy-99"><span class="linenos"> 99</span></a>
 </span><span id="TredictPy-100"><a href="#TredictPy-100"><span class="linenos">100</span></a><span class="sd">        Args:</span>
@@ -1042,7 +1033,7 @@ tredict    </h1>
 </span><span id="TredictPy-128"><a href="#TredictPy-128"><span class="linenos">128</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
 </span><span id="TredictPy-129"><a href="#TredictPy-129"><span class="linenos">129</span></a>
 </span><span id="TredictPy-130"><a href="#TredictPy-130"><span class="linenos">130</span></a>                    <span class="c1"># Create a dict of the params, should be code and state</span>
-</span><span id="TredictPy-131"><a href="#TredictPy-131"><span class="linenos">131</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span id="TredictPy-131"><a href="#TredictPy-131"><span class="linenos">131</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">_params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 </span><span id="TredictPy-132"><a href="#TredictPy-132"><span class="linenos">132</span></a>
 </span><span id="TredictPy-133"><a href="#TredictPy-133"><span class="linenos">133</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Authorisation complete!&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 </span><span id="TredictPy-134"><a href="#TredictPy-134"><span class="linenos">134</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1053,7 +1044,7 @@ tredict    </h1>
 </span><span id="TredictPy-139"><a href="#TredictPy-139"><span class="linenos">139</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
 </span><span id="TredictPy-140"><a href="#TredictPy-140"><span class="linenos">140</span></a>
 </span><span id="TredictPy-141"><a href="#TredictPy-141"><span class="linenos">141</span></a>                    <span class="c1"># Create a dict of the params, should be code and state</span>
-</span><span id="TredictPy-142"><a href="#TredictPy-142"><span class="linenos">142</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span id="TredictPy-142"><a href="#TredictPy-142"><span class="linenos">142</span></a>                    <span class="n">params</span> <span class="o">=</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">_params_from_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 </span><span id="TredictPy-143"><a href="#TredictPy-143"><span class="linenos">143</span></a>
 </span><span id="TredictPy-144"><a href="#TredictPy-144"><span class="linenos">144</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Authorisation failed!&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 </span><span id="TredictPy-145"><a href="#TredictPy-145"><span class="linenos">145</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1084,7 +1075,7 @@ tredict    </h1>
 </span><span id="TredictPy-170"><a href="#TredictPy-170"><span class="linenos">170</span></a><span class="sd">        Returns:</span>
 </span><span id="TredictPy-171"><a href="#TredictPy-171"><span class="linenos">171</span></a><span class="sd">            dict: Response parameters.</span>
 </span><span id="TredictPy-172"><a href="#TredictPy-172"><span class="linenos">172</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TredictPy-173"><a href="#TredictPy-173"><span class="linenos">173</span></a>        <span class="k">return</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">params_from_path</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Paste the URL here: &quot;</span><span class="p">))</span>
+</span><span id="TredictPy-173"><a href="#TredictPy-173"><span class="linenos">173</span></a>        <span class="k">return</span> <span class="n">TredictPy</span><span class="o">.</span><span class="n">_params_from_path</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Paste the URL here: &quot;</span><span class="p">))</span>
 </span><span id="TredictPy-174"><a href="#TredictPy-174"><span class="linenos">174</span></a>
 </span><span id="TredictPy-175"><a href="#TredictPy-175"><span class="linenos">175</span></a>    <span class="k">def</span> <span class="nf">request_auth_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headless</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="TredictPy-176"><a href="#TredictPy-176"><span class="linenos">176</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Request an authorisation code.</span>
@@ -1110,7 +1101,7 @@ tredict    </h1>
 </span><span id="TredictPy-196"><a href="#TredictPy-196"><span class="linenos">196</span></a>
 </span><span id="TredictPy-197"><a href="#TredictPy-197"><span class="linenos">197</span></a>        <span class="k">if</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">user_uuid</span><span class="p">:</span>
 </span><span id="TredictPy-198"><a href="#TredictPy-198"><span class="linenos">198</span></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authorisation complete!&quot;</span><span class="p">)</span>
-</span><span id="TredictPy-199"><a href="#TredictPy-199"><span class="linenos">199</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">({</span><span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
+</span><span id="TredictPy-199"><a href="#TredictPy-199"><span class="linenos">199</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">({</span><span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
 </span><span id="TredictPy-200"><a href="#TredictPy-200"><span class="linenos">200</span></a>        <span class="k">elif</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">user_uuid</span><span class="p">:</span>
 </span><span id="TredictPy-201"><a href="#TredictPy-201"><span class="linenos">201</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="TredictPy-202"><a href="#TredictPy-202"><span class="linenos">202</span></a>                <span class="sa">f</span><span class="s2">&quot;Authorisation failed! Returned state does not match supplied state.&quot;</span>
@@ -1176,7 +1167,7 @@ tredict    </h1>
 </span><span id="TredictPy-262"><a href="#TredictPy-262"><span class="linenos">262</span></a>                    <span class="p">{</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">]}</span>
 </span><span id="TredictPy-263"><a href="#TredictPy-263"><span class="linenos">263</span></a>                <span class="p">)</span>
 </span><span id="TredictPy-264"><a href="#TredictPy-264"><span class="linenos">264</span></a>
-</span><span id="TredictPy-265"><a href="#TredictPy-265"><span class="linenos">265</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="n">user_access_token</span><span class="p">)</span>
+</span><span id="TredictPy-265"><a href="#TredictPy-265"><span class="linenos">265</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">(</span><span class="n">user_access_token</span><span class="p">)</span>
 </span><span id="TredictPy-266"><a href="#TredictPy-266"><span class="linenos">266</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="TredictPy-267"><a href="#TredictPy-267"><span class="linenos">267</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="TredictPy-268"><a href="#TredictPy-268"><span class="linenos">268</span></a>                <span class="sa">f</span><span class="s2">&quot;Retrieving user access token failed error </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;error_codes&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)]</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -1206,7 +1197,7 @@ tredict    </h1>
 </span><span id="TredictPy-292"><a href="#TredictPy-292"><span class="linenos">292</span></a>
 </span><span id="TredictPy-293"><a href="#TredictPy-293"><span class="linenos">293</span></a>        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
 </span><span id="TredictPy-294"><a href="#TredictPy-294"><span class="linenos">294</span></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully deregistered!&quot;</span><span class="p">)</span>
-</span><span id="TredictPy-295"><a href="#TredictPy-295"><span class="linenos">295</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">({</span><span class="s2">&quot;user_access_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+</span><span id="TredictPy-295"><a href="#TredictPy-295"><span class="linenos">295</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">({</span><span class="s2">&quot;user_access_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
 </span><span id="TredictPy-296"><a href="#TredictPy-296"><span class="linenos">296</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="TredictPy-297"><a href="#TredictPy-297"><span class="linenos">297</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="TredictPy-298"><a href="#TredictPy-298"><span class="linenos">298</span></a>                <span class="sa">f</span><span class="s2">&quot;Deregistering failed error </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;error_codes&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)]</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -1730,9 +1721,9 @@ tredict    </h1>
 </span><span id="TredictPy.__init__-44"><a href="#TredictPy.__init__-44"><span class="linenos">44</span></a><span class="sd">            config_file (str, optional): Path of the config file to load. Defaults to &quot;tredict-config.json&quot;.</span>
 </span><span id="TredictPy.__init__-45"><a href="#TredictPy.__init__-45"><span class="linenos">45</span></a>
 </span><span id="TredictPy.__init__-46"><a href="#TredictPy.__init__-46"><span class="linenos">46</span></a><span class="sd">        Raises:</span>
-</span><span id="TredictPy.__init__-47"><a href="#TredictPy.__init__-47"><span class="linenos">47</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.&quot;</span>
+</span><span id="TredictPy.__init__-47"><a href="#TredictPy.__init__-47"><span class="linenos">47</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.</span>
 </span><span id="TredictPy.__init__-48"><a href="#TredictPy.__init__-48"><span class="linenos">48</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TredictPy.__init__-49"><a href="#TredictPy.__init__-49"><span class="linenos">49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">)</span>
+</span><span id="TredictPy.__init__-49"><a href="#TredictPy.__init__-49"><span class="linenos">49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1742,136 +1733,7 @@ tredict    </h1>
     config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".</p>
 
 <p>Raises:
-    APIException: If the config does not contain all mandatory fields."</p>
-</div>
-
-
-                            </div>
-                            <div id="TredictPy.load_config" class="classattr">
-                                        <input id="TredictPy.load_config-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">load_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tredict-config.json&#39;</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
-
-                <label class="view-source-button" for="TredictPy.load_config-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#TredictPy.load_config"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TredictPy.load_config-51"><a href="#TredictPy.load_config-51"><span class="linenos">51</span></a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tredict-config.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TredictPy.load_config-52"><a href="#TredictPy.load_config-52"><span class="linenos">52</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the config from file.</span>
-</span><span id="TredictPy.load_config-53"><a href="#TredictPy.load_config-53"><span class="linenos">53</span></a>
-</span><span id="TredictPy.load_config-54"><a href="#TredictPy.load_config-54"><span class="linenos">54</span></a><span class="sd">        Args:</span>
-</span><span id="TredictPy.load_config-55"><a href="#TredictPy.load_config-55"><span class="linenos">55</span></a><span class="sd">            config_file (str, optional): Path of the config file to load. Defaults to &quot;tredict-config.json&quot;.</span>
-</span><span id="TredictPy.load_config-56"><a href="#TredictPy.load_config-56"><span class="linenos">56</span></a>
-</span><span id="TredictPy.load_config-57"><a href="#TredictPy.load_config-57"><span class="linenos">57</span></a><span class="sd">        Raises:</span>
-</span><span id="TredictPy.load_config-58"><a href="#TredictPy.load_config-58"><span class="linenos">58</span></a><span class="sd">            APIException: If the config does not contain all mandatory fields.&quot;</span>
-</span><span id="TredictPy.load_config-59"><a href="#TredictPy.load_config-59"><span class="linenos">59</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TredictPy.load_config-60"><a href="#TredictPy.load_config-60"><span class="linenos">60</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span> <span class="o">=</span> <span class="n">config_file</span>
-</span><span id="TredictPy.load_config-61"><a href="#TredictPy.load_config-61"><span class="linenos">61</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span id="TredictPy.load_config-62"><a href="#TredictPy.load_config-62"><span class="linenos">62</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-</span><span id="TredictPy.load_config-63"><a href="#TredictPy.load_config-63"><span class="linenos">63</span></a>
-</span><span id="TredictPy.load_config-64"><a href="#TredictPy.load_config-64"><span class="linenos">64</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span>
-</span><span id="TredictPy.load_config-65"><a href="#TredictPy.load_config-65"><span class="linenos">65</span></a>            <span class="p">[</span>
-</span><span id="TredictPy.load_config-66"><a href="#TredictPy.load_config-66"><span class="linenos">66</span></a>                <span class="s2">&quot;auth_url&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-67"><a href="#TredictPy.load_config-67"><span class="linenos">67</span></a>                <span class="s2">&quot;token_url&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-68"><a href="#TredictPy.load_config-68"><span class="linenos">68</span></a>                <span class="s2">&quot;token_append&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-69"><a href="#TredictPy.load_config-69"><span class="linenos">69</span></a>                <span class="s2">&quot;endpoint_base_url&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-70"><a href="#TredictPy.load_config-70"><span class="linenos">70</span></a>                <span class="s2">&quot;endpoint_append&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-71"><a href="#TredictPy.load_config-71"><span class="linenos">71</span></a>                <span class="s2">&quot;service_id&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-72"><a href="#TredictPy.load_config-72"><span class="linenos">72</span></a>                <span class="s2">&quot;client_id&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-73"><a href="#TredictPy.load_config-73"><span class="linenos">73</span></a>                <span class="s2">&quot;client_secret&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-74"><a href="#TredictPy.load_config-74"><span class="linenos">74</span></a>                <span class="s2">&quot;auth_code_expires_in&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-75"><a href="#TredictPy.load_config-75"><span class="linenos">75</span></a>                <span class="s2">&quot;renewal_buffer&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-76"><a href="#TredictPy.load_config-76"><span class="linenos">76</span></a>                <span class="s2">&quot;error_codes&quot;</span><span class="p">,</span>
-</span><span id="TredictPy.load_config-77"><a href="#TredictPy.load_config-77"><span class="linenos">77</span></a>            <span class="p">]</span>
-</span><span id="TredictPy.load_config-78"><a href="#TredictPy.load_config-78"><span class="linenos">78</span></a>        <span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-</span><span id="TredictPy.load_config-79"><a href="#TredictPy.load_config-79"><span class="linenos">79</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="TredictPy.load_config-80"><a href="#TredictPy.load_config-80"><span class="linenos">80</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="TredictPy.load_config-81"><a href="#TredictPy.load_config-81"><span class="linenos">81</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
-</span><span id="TredictPy.load_config-82"><a href="#TredictPy.load_config-82"><span class="linenos">82</span></a>                <span class="s2">&quot;Config does not contain mandatory fields. Check example.&quot;</span>
-</span><span id="TredictPy.load_config-83"><a href="#TredictPy.load_config-83"><span class="linenos">83</span></a>            <span class="p">)</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Load the config from file.</p>
-
-<p>Args:
-    config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".</p>
-
-<p>Raises:
-    APIException: If the config does not contain all mandatory fields."</p>
-</div>
-
-
-                            </div>
-                            <div id="TredictPy.save_config" class="classattr">
-                                        <input id="TredictPy.save_config-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">save_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
-
-                <label class="view-source-button" for="TredictPy.save_config-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#TredictPy.save_config"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TredictPy.save_config-85"><a href="#TredictPy.save_config-85"><span class="linenos">85</span></a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TredictPy.save_config-86"><a href="#TredictPy.save_config-86"><span class="linenos">86</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Save and optionally update the config to file.</span>
-</span><span id="TredictPy.save_config-87"><a href="#TredictPy.save_config-87"><span class="linenos">87</span></a>
-</span><span id="TredictPy.save_config-88"><a href="#TredictPy.save_config-88"><span class="linenos">88</span></a><span class="sd">        Args:</span>
-</span><span id="TredictPy.save_config-89"><a href="#TredictPy.save_config-89"><span class="linenos">89</span></a><span class="sd">            d (dict, optional): Dict to add to the config. Defaults to None.</span>
-</span><span id="TredictPy.save_config-90"><a href="#TredictPy.save_config-90"><span class="linenos">90</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TredictPy.save_config-91"><a href="#TredictPy.save_config-91"><span class="linenos">91</span></a>        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TredictPy.save_config-92"><a href="#TredictPy.save_config-92"><span class="linenos">92</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-</span><span id="TredictPy.save_config-93"><a href="#TredictPy.save_config-93"><span class="linenos">93</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_file</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span id="TredictPy.save_config-94"><a href="#TredictPy.save_config-94"><span class="linenos">94</span></a>            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Save and optionally update the config to file.</p>
-
-<p>Args:
-    d (dict, optional): Dict to add to the config. Defaults to None.</p>
-</div>
-
-
-                            </div>
-                            <div id="TredictPy.params_from_path" class="classattr">
-                                        <input id="TredictPy.params_from_path-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-                    <div class="decorator decorator-staticmethod">@staticmethod</div>
-
-        <span class="def">def</span>
-        <span class="name">params_from_path</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">path</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="nb">dict</span>:</span></span>
-
-                <label class="view-source-button" for="TredictPy.params_from_path-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#TredictPy.params_from_path"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TredictPy.params_from_path-96"><a href="#TredictPy.params_from_path-96"><span class="linenos"> 96</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="TredictPy.params_from_path-97"><a href="#TredictPy.params_from_path-97"><span class="linenos"> 97</span></a>    <span class="k">def</span> <span class="nf">params_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="TredictPy.params_from_path-98"><a href="#TredictPy.params_from_path-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Split a query string from a URL path and create a dict of the key and value parameter pairs.</span>
-</span><span id="TredictPy.params_from_path-99"><a href="#TredictPy.params_from_path-99"><span class="linenos"> 99</span></a>
-</span><span id="TredictPy.params_from_path-100"><a href="#TredictPy.params_from_path-100"><span class="linenos">100</span></a><span class="sd">        Args:</span>
-</span><span id="TredictPy.params_from_path-101"><a href="#TredictPy.params_from_path-101"><span class="linenos">101</span></a><span class="sd">            path (str): URL path.</span>
-</span><span id="TredictPy.params_from_path-102"><a href="#TredictPy.params_from_path-102"><span class="linenos">102</span></a>
-</span><span id="TredictPy.params_from_path-103"><a href="#TredictPy.params_from_path-103"><span class="linenos">103</span></a><span class="sd">        Returns:</span>
-</span><span id="TredictPy.params_from_path-104"><a href="#TredictPy.params_from_path-104"><span class="linenos">104</span></a><span class="sd">            dict: Dict of the key and value parameter pairs.</span>
-</span><span id="TredictPy.params_from_path-105"><a href="#TredictPy.params_from_path-105"><span class="linenos">105</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TredictPy.params_from_path-106"><a href="#TredictPy.params_from_path-106"><span class="linenos">106</span></a>        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-</span><span id="TredictPy.params_from_path-107"><a href="#TredictPy.params_from_path-107"><span class="linenos">107</span></a>            <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[(</span><span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)]</span>
-</span><span id="TredictPy.params_from_path-108"><a href="#TredictPy.params_from_path-108"><span class="linenos">108</span></a>        <span class="p">)</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Split a query string from a URL path and create a dict of the key and value parameter pairs.</p>
-
-<p>Args:
-    path (str): URL path.</p>
-
-<p>Returns:
-    dict: Dict of the key and value parameter pairs.</p>
+    APIException: If the config does not contain all mandatory fields.</p>
 </div>
 
 
@@ -1911,7 +1773,7 @@ tredict    </h1>
 </span><span id="TredictPy.request_auth_code-196"><a href="#TredictPy.request_auth_code-196"><span class="linenos">196</span></a>
 </span><span id="TredictPy.request_auth_code-197"><a href="#TredictPy.request_auth_code-197"><span class="linenos">197</span></a>        <span class="k">if</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">user_uuid</span><span class="p">:</span>
 </span><span id="TredictPy.request_auth_code-198"><a href="#TredictPy.request_auth_code-198"><span class="linenos">198</span></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authorisation complete!&quot;</span><span class="p">)</span>
-</span><span id="TredictPy.request_auth_code-199"><a href="#TredictPy.request_auth_code-199"><span class="linenos">199</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">({</span><span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
+</span><span id="TredictPy.request_auth_code-199"><a href="#TredictPy.request_auth_code-199"><span class="linenos">199</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">({</span><span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
 </span><span id="TredictPy.request_auth_code-200"><a href="#TredictPy.request_auth_code-200"><span class="linenos">200</span></a>        <span class="k">elif</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">user_uuid</span><span class="p">:</span>
 </span><span id="TredictPy.request_auth_code-201"><a href="#TredictPy.request_auth_code-201"><span class="linenos">201</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="TredictPy.request_auth_code-202"><a href="#TredictPy.request_auth_code-202"><span class="linenos">202</span></a>                <span class="sa">f</span><span class="s2">&quot;Authorisation failed! Returned state does not match supplied state.&quot;</span>
@@ -2004,7 +1866,7 @@ the URL to be entered for headless.</p>
 </span><span id="TredictPy.request_user_access_token-262"><a href="#TredictPy.request_user_access_token-262"><span class="linenos">262</span></a>                    <span class="p">{</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">]}</span>
 </span><span id="TredictPy.request_user_access_token-263"><a href="#TredictPy.request_user_access_token-263"><span class="linenos">263</span></a>                <span class="p">)</span>
 </span><span id="TredictPy.request_user_access_token-264"><a href="#TredictPy.request_user_access_token-264"><span class="linenos">264</span></a>
-</span><span id="TredictPy.request_user_access_token-265"><a href="#TredictPy.request_user_access_token-265"><span class="linenos">265</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="n">user_access_token</span><span class="p">)</span>
+</span><span id="TredictPy.request_user_access_token-265"><a href="#TredictPy.request_user_access_token-265"><span class="linenos">265</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">(</span><span class="n">user_access_token</span><span class="p">)</span>
 </span><span id="TredictPy.request_user_access_token-266"><a href="#TredictPy.request_user_access_token-266"><span class="linenos">266</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="TredictPy.request_user_access_token-267"><a href="#TredictPy.request_user_access_token-267"><span class="linenos">267</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="TredictPy.request_user_access_token-268"><a href="#TredictPy.request_user_access_token-268"><span class="linenos">268</span></a>                <span class="sa">f</span><span class="s2">&quot;Retrieving user access token failed error </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;error_codes&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)]</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -2058,7 +1920,7 @@ the URL to be entered for headless.</p>
 </span><span id="TredictPy.deregister-292"><a href="#TredictPy.deregister-292"><span class="linenos">292</span></a>
 </span><span id="TredictPy.deregister-293"><a href="#TredictPy.deregister-293"><span class="linenos">293</span></a>        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
 </span><span id="TredictPy.deregister-294"><a href="#TredictPy.deregister-294"><span class="linenos">294</span></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully deregistered!&quot;</span><span class="p">)</span>
-</span><span id="TredictPy.deregister-295"><a href="#TredictPy.deregister-295"><span class="linenos">295</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">save_config</span><span class="p">({</span><span class="s2">&quot;user_access_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+</span><span id="TredictPy.deregister-295"><a href="#TredictPy.deregister-295"><span class="linenos">295</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">({</span><span class="s2">&quot;user_access_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auth_code&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
 </span><span id="TredictPy.deregister-296"><a href="#TredictPy.deregister-296"><span class="linenos">296</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="TredictPy.deregister-297"><a href="#TredictPy.deregister-297"><span class="linenos">297</span></a>            <span class="k">raise</span> <span class="n">APIException</span><span class="p">(</span>
 </span><span id="TredictPy.deregister-298"><a href="#TredictPy.deregister-298"><span class="linenos">298</span></a>                <span class="sa">f</span><span class="s2">&quot;Deregistering failed error </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;error_codes&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)]</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -2627,7 +2489,7 @@ the URL to be entered for headless.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">bodyvalues_upload</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">values_date</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">974718</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>,</span><span class="param">	<span class="n">resting_heart_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">body_fat_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">body_water_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">body_muscle_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="nb">dict</span>:</span></span>
+        <span class="name">bodyvalues_upload</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">values_date</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">828099</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>,</span><span class="param">	<span class="n">resting_heart_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">body_fat_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">body_water_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">body_muscle_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="nb">dict</span>:</span></span>
 
                 <label class="view-source-button" for="TredictPy.bodyvalues_upload-view-source"><span>View Source</span></label>
 
