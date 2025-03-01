@@ -162,9 +162,13 @@ class TredictPy:
         # Start the callback server or go headless
         params = self._callback_headless() if headless else self._callback_server()
 
-        if "code" in params.keys():
+        if "code" in params.keys() and params["state"] == user_uuid:
             print("Authorisation complete!")
             self.save_config({"auth_code": params})
+        elif "code" in params.keys() and params["state"] != user_uuid:
+            raise APIException(
+                f"Authorisation failed! Returned state does not match supplied state."
+            )
         else:  # If code is not in the keys authorisation failed
             raise APIException(
                 f"Authorisation failed!\nCallback response:\n{json.dumps(params, indent=4)}"
