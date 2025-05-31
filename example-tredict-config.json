@@ -24,5 +24,7 @@
         "429": "Too many requests.",
         "500": "Something went wrong on our side",
         "503": "Sorry, we went to the pub"
-    }
+    },
+    "auth_code": null,
+    "user_access_token": null
 }

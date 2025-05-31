@@ -73,6 +73,8 @@ class TredictPy:
                 "auth_code_expires_in",
                 "renewal_buffer",
                 "error_codes",
+                "auth_code",
+                "user_access_token",
             ]
         ).issubset(self._config.keys()):
             self._config_file = None
