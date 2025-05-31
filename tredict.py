@@ -171,6 +171,36 @@ class TredictPy:
         """
         return TredictPy._params_from_path(input("Paste the URL here: "))
 
+    def is_authorised(self) -> bool:
+        """Check if the client is authorised or not.
+
+        Returns:
+            bool: True if authorised and False if not.
+        """
+        # First run, need to authorise and get an access token
+        # Or was run before but did not complete authorisation
+        if not self._config["auth_code"] or not self._config["user_access_token"]:
+            return False
+        else:
+            return True
+
+    def is_user_access_token_valid(self) -> bool:
+        """Check if the user access token is valid.
+
+        Returns:
+            bool: True if the user access token is valid or False if not.
+        """
+        # An access token was obtained before but it has expired
+        # can refresh using the refresh token
+        if (
+            self._config["user_access_token"]
+            and self._config["user_access_token"]["expires_on"]
+            <= int(time.time()) - self._config["renewal_buffer"]
+        ):
+            return False
+        else:
+            return True
+
     def request_auth_code(self, headless: bool = False) -> None:
         """Request an authorisation code.
 
@@ -195,7 +225,16 @@ class TredictPy:
 
         if "code" in params.keys() and params["state"] == user_uuid:
             print("Authorisation complete!")
-            self._save_config({"auth_code": params})
+            self._save_config(
+                {
+                    "auth_code": params
+                    | {
+                        "expires_on": int(
+                            time.time() + self._config["auth_code_expires_in"]
+                        )
+                    }
+                }
+            )
         elif "code" in params.keys() and params["state"] != user_uuid:
             raise APIException(
                 f"Authorisation failed! Returned state does not match supplied state."
@@ -219,6 +258,11 @@ class TredictPy:
             self._config["auth_code"] is None or "auth_code" not in self._config.keys()
         ):
             raise APIException("You must request an authorisation code first.")
+
+        if not refresh and self._config["auth_code"]["expires_on"] <= int(
+            time.time() - self._config["renewal_buffer"]
+        ):
+            raise APIException("Authorisation code has expired.")
 
         if refresh and (
             self._config["user_access_token"] is None
