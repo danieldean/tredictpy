@@ -264,7 +264,7 @@ class TredictPy:
         ):
             raise APIException("Authorisation code has expired.")
 
-        if refresh and (not self.is_user_access_token_valid()):
+        if refresh and not self._config["user_access_token"]:
             raise APIException(
                 "You must request a user access token with an authorisation code before you can refresh."
             )
