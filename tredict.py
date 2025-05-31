@@ -264,10 +264,7 @@ class TredictPy:
         ):
             raise APIException("Authorisation code has expired.")
 
-        if refresh and (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
+        if refresh and (not self.is_user_access_token_valid()):
             raise APIException(
                 "You must request a user access token with an authorisation code before you can refresh."
             )
@@ -318,11 +315,8 @@ class TredictPy:
             APIException: If there was an error deregistering.
         """
 
-        if (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
-            raise APIException("You must request a user access token first.")
+        if not self.is_user_access_token_valid():
+            raise APIException("User access token not obtained or expired.")
 
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
@@ -357,11 +351,8 @@ class TredictPy:
             list: A list of the response pages.
         """
 
-        if (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
-            raise APIException("You must request a user access token first.")
+        if not self.is_user_access_token_valid():
+            raise APIException("User access token not obtained or expired.")
 
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
@@ -483,11 +474,8 @@ class TredictPy:
             dict: A dict containing the response.
         """
 
-        if (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
-            raise APIException("You must request a user access token first.")
+        if not self.is_user_access_token_valid():
+            raise APIException("User access token not obtained or expired.")
 
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
@@ -601,11 +589,8 @@ class TredictPy:
             bytes: Binary content of the response which could be JSON or a FIT file.
         """
 
-        if (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
-            raise APIException("You must request a user access token first.")
+        if not self.is_user_access_token_valid():
+            raise APIException("User access token not obtained or expired.")
 
         if file_type and (file_type not in ["json", "fit"] or endpoint == "activity"):
             APIException(
@@ -714,11 +699,8 @@ class TredictPy:
             the failure is due to a duplicate).
         """
 
-        if (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
-            raise APIException("You must request a user access token first.")
+        if not self.is_user_access_token_valid():
+            raise APIException("User access token not obtained or expired.")
 
         with open(file_path, "rb") as f:
             activity_file = f.read(12)
@@ -788,11 +770,8 @@ class TredictPy:
             APIException: If the request fails.
         """
 
-        if (
-            self._config["user_access_token"] is None
-            or "user_access_token" not in self._config.keys()
-        ):
-            raise APIException("You must request a user access token first.")
+        if not self.is_user_access_token_valid():
+            raise APIException("User access token not obtained or expired.")
 
         headers = {
             "authorization": f"bearer {self._config['user_access_token']['access_token']}",
