@@ -13,6 +13,7 @@
 
 # API documentation: https://www.tredict.com/blog/oauth_docs/
 
+import os
 import requests
 import uuid
 import json
@@ -21,6 +22,22 @@ from datetime import datetime, timezone
 
 import http.server
 from socketserver import TCPServer
+
+AUTH_URL = "https://www.tredict.com/authorization/"
+TOKEN_URL = "https://www.tredict.com/user/oauth/v2/token/"
+ENDPOINT_BASE_URL = "https://www.tredict.com/api/oauth/v2/"
+ERROR_CODES = {
+    200: "Request could be processed successfully",
+    400: "The request is invalid or contains invalid data",
+    401: "Invalid authorization header",
+    403: "You provided an invalid access token. Maybe it is expired or it is out of scope",
+    404: "Does not exist",
+    429: "Too many requests.",
+    500: "Something went wrong on our side",
+    503: "Sorry, we went to the pub",
+}
+AUTH_CODE_EXPIRES_IN = 600
+RENEWAL_BUFFER = 60
 
 
 class APIException(Exception):
@@ -36,52 +53,54 @@ class APIException(Exception):
 class TredictPy:
     """A straightforward script to authorise, authenticate and interact with Tredict."""
 
-    def __init__(self, config_file: str = "tredict-config.json"):
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        token_append: str,
+        endpoint_append: str,
+        config_file: str = "tredict-config.json",
+    ):
         """Initialise a new instance.
 
         Args:
+            client_id (str): Client ID.
+            client_secret (str): Client Secret.
+            token_append (str): Token append string (secret).
+            endpoint_append (str): Endpoint append string (secret).
             config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
 
         Raises:
             APIException: If the config does not contain all mandatory fields.
         """
-        self._load_config(config_file=config_file)
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._token_append = token_append
+        self._endpoint_append = endpoint_append
+        self._config_file = config_file
+        self._load_config()
 
-    def _load_config(self, config_file: str = "tredict-config.json") -> None:
+    def _load_config(self) -> None:
         """Load the config from file.
 
-        Args:
-            config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
-
         Raises:
             APIException: If the config does not contain all mandatory fields.
         """
-        self._config_file = config_file
-        with open(self._config_file, "rt") as f:
-            self._config = json.loads(f.read())
+        if os.path.isfile(self._config_file):
+            with open(self._config_file, "rt") as f:
+                self._config = json.load(f)
+        else:
+            self._config = {"auth_code": None, "user_access_token": None}
 
         if not set(
             [
-                "auth_url",
-                "token_url",
-                "token_append",
-                "endpoint_base_url",
-                "endpoint_append",
-                "service_id",
-                "client_id",
-                "client_secret",
-                "auth_code_expires_in",
-                "renewal_buffer",
-                "error_codes",
                 "auth_code",
                 "user_access_token",
             ]
         ).issubset(self._config.keys()):
             self._config_file = None
             self._config = None
-            raise APIException(
-                "Config does not contain mandatory fields. Check example."
-            )
+            raise APIException("Config does not contain mandatory fields.")
 
     def _save_config(self, d: dict = None) -> None:
         """Save and optionally update the config to file.
@@ -197,7 +216,7 @@ class TredictPy:
         if (
             self._config["user_access_token"]
             and self._config["user_access_token"]["expires_on"]
-            <= int(time.time()) - self._config["renewal_buffer"]
+            <= int(time.time()) - RENEWAL_BUFFER
         ):
             return False
         else:
@@ -219,7 +238,7 @@ class TredictPy:
         user_uuid = str(uuid.uuid4())
 
         print(
-            f"Open this URL to authorise: {self._config['auth_url']}?client_id={self._config['client_id']}&state={user_uuid}"
+            f"Open this URL to authorise: {AUTH_URL}?client_id={self._client_id}&state={user_uuid}"
         )
 
         # Start the callback server or go headless
@@ -230,11 +249,7 @@ class TredictPy:
             self._save_config(
                 {
                     "auth_code": params
-                    | {
-                        "expires_on": int(
-                            time.time() + self._config["auth_code_expires_in"]
-                        )
-                    }
+                    | {"expires_on": int(time.time() + AUTH_CODE_EXPIRES_IN)}
                 }
             )
         elif "code" in params.keys() and params["state"] != user_uuid:
@@ -262,7 +277,7 @@ class TredictPy:
             raise APIException("You must request an authorisation code first.")
 
         if not refresh and self._config["auth_code"]["expires_on"] <= int(
-            time.time() - self._config["renewal_buffer"]
+            time.time() - RENEWAL_BUFFER
         ):
             raise APIException("Authorisation code has expired.")
 
@@ -285,9 +300,9 @@ class TredictPy:
         }
 
         r = requests.post(
-            f"{self._config['token_url']}{self._config['token_append']}",
+            f"{TOKEN_URL}{self._token_append}",
             headers=headers,
-            auth=(self._config["client_id"], self._config["client_secret"]),
+            auth=(self._client_id, self._client_secret),
             data=data,
         )
 
@@ -307,7 +322,7 @@ class TredictPy:
             self._save_config(user_access_token)
         else:
             raise APIException(
-                f"Retrieving user access token failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                f"Retrieving user access token failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
             )
 
     def deregister(self) -> None:
@@ -325,7 +340,7 @@ class TredictPy:
         }
 
         r = requests.delete(
-            f"{self._config['token_url']}{self._config['token_append']}",
+            f"{TOKEN_URL}{self._token_append}",
             headers=headers,
         )
 
@@ -334,7 +349,7 @@ class TredictPy:
             self._save_config({"user_access_token": None, "auth_code": None})
         else:
             raise APIException(
-                f"Deregistering failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                f"Deregistering failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
             )
 
     def _list_endpoint(self, endpoint: str, params: dict) -> list:
@@ -362,7 +377,7 @@ class TredictPy:
         }
 
         pages = []
-        url = f"{self._config['endpoint_base_url']}{endpoint}/{self._config['endpoint_append']}"
+        url = f"{ENDPOINT_BASE_URL}{endpoint}/{self._endpoint_append}"
 
         while True:
 
@@ -388,7 +403,7 @@ class TredictPy:
                     params = None
             else:
                 raise APIException(
-                    f"Request to {endpoint} failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                    f"Request to {endpoint} failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
                 )
 
         return pages
@@ -484,7 +499,7 @@ class TredictPy:
             "accept": "application/json;charset=UTF-8",
         }
 
-        url = f"{self._config['endpoint_base_url']}{endpoint}/{self._config['endpoint_append']}"
+        url = f"{ENDPOINT_BASE_URL}{endpoint}/{self._endpoint_append}"
         url = f"{url}/{id}" if id else url  # Append the ID if there is one
 
         r = requests.get(
@@ -498,7 +513,7 @@ class TredictPy:
 
         else:
             raise APIException(
-                f"Request to {endpoint} failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                f"Request to {endpoint} failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
             )
 
     def activity_download(self, id: str) -> dict:
@@ -604,7 +619,7 @@ class TredictPy:
             "accept": "application/json;charset=UTF-8",
         }
 
-        url = f"{self._config['endpoint_base_url']}{endpoint}/file/{self._config['endpoint_append']}"
+        url = f"{ENDPOINT_BASE_URL}{endpoint}/file/{self._endpoint_append}"
         url = (
             f"{url}/{file_type}" if file_type else url
         )  # Append the type if there is one
@@ -620,7 +635,7 @@ class TredictPy:
             return r.content
         else:
             raise APIException(
-                f"Request to {endpoint} failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                f"Request to {endpoint} failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
             )
 
     def planned_training_download(
@@ -721,7 +736,7 @@ class TredictPy:
             "accept": "application/json;charset=UTF-8",
         }
 
-        url = f"{self._config['endpoint_base_url']}activity/upload/{self._config['endpoint_append']}"
+        url = f"{ENDPOINT_BASE_URL}activity/upload/{self._endpoint_append}"
 
         files = {
             "file": (
@@ -743,7 +758,7 @@ class TredictPy:
         else:
             # Handle the error codes correctly
             raise APIException(
-                f"Activity file upload failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                f"Activity file upload failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
             )
 
     def bodyvalues_upload(
@@ -781,7 +796,7 @@ class TredictPy:
             "content-type": "application/json;charset=UTF-8",
         }
 
-        url = f"{self._config['endpoint_base_url']}bodyvalues/{self._config['endpoint_append']}"
+        url = f"{ENDPOINT_BASE_URL}bodyvalues/{self._endpoint_append}"
 
         data = {
             "bodyvalues": [
@@ -811,5 +826,5 @@ class TredictPy:
             return  # Upload was successful but nothing is returned
         else:
             raise APIException(
-                f"Body values upload failed error {r.status_code} ({self._config['error_codes'][str(r.status_code)]})."
+                f"Body values upload failed error {r.status_code} ({ERROR_CODES[r.status_code]})."
             )
