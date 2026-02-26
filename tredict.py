@@ -19,6 +19,7 @@ import uuid
 import json
 import time
 from datetime import datetime, timezone
+from typing import Self
 
 import http.server
 from socketserver import TCPServer
@@ -55,20 +56,24 @@ class TredictPy:
 
     def __init__(
         self,
-        client_id: str,
-        client_secret: str,
-        token_append: str,
-        endpoint_append: str,
-        config_file: str = "tredict-config.json",
+        client_id: str = None,
+        client_secret: str = None,
+        token_append: str = None,
+        endpoint_append: str = None,
+        config_file: str = "tredict-secrets.json",
+        with_personal_access_token: bool = True,
     ):
         """Initialise a new instance.
 
+        Dot not use the constructor directly. Use one of the class methods instead.
+
         Args:
-            client_id (str): Client ID.
-            client_secret (str): Client Secret.
-            token_append (str): Token append string (secret).
-            endpoint_append (str): Endpoint append string (secret).
-            config_file (str, optional): Path of the config file to load. Defaults to "tredict-config.json".
+            client_id (str, optional): Client ID. Defaults to None.
+            client_secret (str, optional): Client Secret. Defaults to None.
+            token_append (str, optional): Token append string (secret). Defaults to None.
+            endpoint_append (str, optional): Endpoint append string (secret). Defaults to None.
+            config_file (str, optional): Path of the config file to load. Defaults to "tredict-secrets.json".
+            with_personal_access_token (bool, optional): Authenticate using a personal access token or as an application.
 
         Raises:
             APIException: If the config does not contain all mandatory fields.
@@ -78,7 +83,48 @@ class TredictPy:
         self._token_append = token_append
         self._endpoint_append = endpoint_append
         self._config_file = config_file
+        self._with_personal_access_token = with_personal_access_token
         self._load_config()
+
+    @classmethod
+    def with_personal_access_token(
+        self,
+        config_file: str = "tredict-secrets.json",
+    ) -> Self:
+        """Initialise a new instance using a personal access token.
+
+        Args:
+            config_file (str, optional): Path of the config file to load. Defaults to "tredict-secrets.json".
+
+        Raises:
+            APIException: If the config does not contain all mandatory fields.
+        """
+        return TredictPy(None, None, None, None, config_file, True)
+
+    @classmethod
+    def as_application(
+        self,
+        client_id: str = None,
+        client_secret: str = None,
+        token_append: str = None,
+        endpoint_append: str = None,
+        config_file: str = "tredict-secrets.json",
+    ) -> Self:
+        """Initialise a new instance using application authentication.
+
+        Args:
+            client_id (str, optional): Client ID. Defaults to None.
+            client_secret (str, optional): Client Secret. Defaults to None.
+            token_append (str, optional): Token append string (secret). Defaults to None.
+            endpoint_append (str, optional): Endpoint append string (secret). Defaults to None.
+            config_file (str, optional): Path of the config file to load. Defaults to "tredict-secrets.json".
+
+        Raises:
+            APIException: If the config does not contain all mandatory fields.
+        """
+        return TredictPy(
+            client_id, client_secret, token_append, endpoint_append, config_file, False
+        )
 
     def _load_config(self) -> None:
         """Load the config from file.
@@ -90,12 +136,17 @@ class TredictPy:
             with open(self._config_file, "rt") as f:
                 self._config = json.load(f)
         else:
-            self._config = {"auth_code": None, "user_access_token": None}
+            self._config = {
+                "auth_code": None,
+                "user_access_token": None,
+                "personal_access_token": None,
+            }
 
         if not set(
             [
                 "auth_code",
                 "user_access_token",
+                "personal_access_token",
             ]
         ).issubset(self._config.keys()):
             self._config_file = None
@@ -197,10 +248,23 @@ class TredictPy:
 
         Returns:
             bool: True if authorised and False if not.
+
+        Raises:
+            APIException: If a personal access token is being used.
         """
+
+        if self._with_personal_access_token:
+            raise APIException(
+                "Cannot check validity when using a personal access token."
+            )
+
         # First run, need to authorise and get an access token
         # Or was run before but did not complete authorisation
-        if not self._config["auth_code"] or not self._config["user_access_token"]:
+        if (
+            not self._config["auth_code"]
+            or not self._config["user_access_token"]
+            or not self._config["personal_access_token"]
+        ):
             return False
         else:
             return True
@@ -210,17 +274,26 @@ class TredictPy:
 
         Returns:
             bool: True if the user access token is valid or False if not.
+
+        Raises:
+            APIException: If a personal access token is being used.
         """
+
+        if self._with_personal_access_token:
+            raise APIException(
+                "Cannot check validity when using a personal access token."
+            )
+
         # An access token was obtained before but it has expired
         # can refresh using the refresh token
         if (
             self._config["user_access_token"]
             and self._config["user_access_token"]["expires_on"]
-            <= int(time.time()) - RENEWAL_BUFFER
+            > int(time.time()) - RENEWAL_BUFFER
         ):
-            return False
-        else:
             return True
+        else:
+            return False
 
     def request_auth_code(self, headless: bool = False) -> None:
         """Request an authorisation code.
@@ -232,8 +305,14 @@ class TredictPy:
             headless (bool, optional): Run in headless mode. Defaults to False.
 
         Raises:
-            APIException: If the returned and supplied sates do not match or the authorisation failed.
+            APIException: If the returned and supplied sates do not match or the authorisation failed or a personal
+            access token is being used.
         """
+
+        if self._with_personal_access_token:
+            raise APIException(
+                "Cannot request a authorisation code when using a personal access token."
+            )
 
         user_uuid = str(uuid.uuid4())
 
@@ -268,8 +347,14 @@ class TredictPy:
             refresh (bool, optional): Set to True to use a long lived refresh token. Defaults to False.
 
         Raises:
-            APIException: If there was an error requesting the user access token.
+            APIException: If there was an error requesting the user access token or a personal access token is being
+            used.
         """
+
+        if self._with_personal_access_token:
+            raise APIException(
+                "Cannot request a user access token when using a personal access token."
+            )
 
         if not refresh and (
             self._config["auth_code"] is None or "auth_code" not in self._config.keys()
@@ -329,8 +414,11 @@ class TredictPy:
         """Deregister from the API.
 
         Raises:
-            APIException: If there was an error deregistering.
+            APIException: If there was an error deregistering or a personal access token is being used.
         """
+
+        if self._with_personal_access_token:
+            raise APIException("Cannot deregister when using a personal access token.")
 
         if not self.is_user_access_token_valid():
             raise APIException("User access token not obtained or expired.")
@@ -368,16 +456,30 @@ class TredictPy:
             list: A list of the response pages.
         """
 
-        if not self.is_user_access_token_valid():
-            raise APIException("User access token not obtained or expired.")
+        if (
+            not self._config["personal_access_token"]
+            and not self.is_user_access_token_valid()
+        ):
+            raise APIException(
+                "No personal access token and user access token not obtained or expired."
+            )
+
+        bearer_token = (
+            self._config["personal_access_token"]
+            or self._config["user_access_token"]["access_token"]
+        )
 
         headers = {
-            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "authorization": f"bearer {bearer_token}",
             "accept": "application/json;charset=UTF-8",
         }
 
         pages = []
-        url = f"{ENDPOINT_BASE_URL}{endpoint}/{self._endpoint_append}"
+        url = (
+            ENDPOINT_BASE_URL
+            + endpoint
+            + ("/" + self._endpoint_append if self._endpoint_append else "")
+        )
 
         while True:
 
@@ -398,7 +500,7 @@ class TredictPy:
                 ):
                     break
                 else:
-                    url = r.json()["_links"]["next"]
+                    url = r.json()["_links"]["next"]["href"]
                     # Also need to set params to None as next contains params
                     params = None
             else:
@@ -491,15 +593,29 @@ class TredictPy:
             dict: A dict containing the response.
         """
 
-        if not self.is_user_access_token_valid():
-            raise APIException("User access token not obtained or expired.")
+        if (
+            not self._config["personal_access_token"]
+            and not self.is_user_access_token_valid()
+        ):
+            raise APIException(
+                "No personal access token and user access token not obtained or expired."
+            )
+
+        bearer_token = (
+            self._config["personal_access_token"]
+            or self._config["user_access_token"]["access_token"]
+        )
 
         headers = {
-            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "authorization": f"bearer {bearer_token}",
             "accept": "application/json;charset=UTF-8",
         }
 
-        url = f"{ENDPOINT_BASE_URL}{endpoint}/{self._endpoint_append}"
+        url = (
+            ENDPOINT_BASE_URL
+            + endpoint
+            + ("/" + self._endpoint_append if self._endpoint_append else "")
+        )
         url = f"{url}/{id}" if id else url  # Append the ID if there is one
 
         r = requests.get(
@@ -606,20 +722,35 @@ class TredictPy:
             bytes: Binary content of the response which could be JSON or a FIT file.
         """
 
-        if not self.is_user_access_token_valid():
-            raise APIException("User access token not obtained or expired.")
+        if (
+            not self._config["personal_access_token"]
+            and not self.is_user_access_token_valid()
+        ):
+            raise APIException(
+                "No personal access token and user access token not obtained or expired."
+            )
 
         if file_type and (file_type not in ["json", "fit"] or endpoint == "activity"):
             APIException(
                 f"Invalid file type '{file_type}' specified or file type not applicable!"
             )
 
+        bearer_token = (
+            self._config["personal_access_token"]
+            or self._config["user_access_token"]["access_token"]
+        )
+
         headers = {
-            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "authorization": f"bearer {bearer_token}",
             "accept": "application/json;charset=UTF-8",
         }
 
-        url = f"{ENDPOINT_BASE_URL}{endpoint}/file/{self._endpoint_append}"
+        url = (
+            ENDPOINT_BASE_URL
+            + endpoint
+            + "/file"
+            + ("/" + self._endpoint_append if self._endpoint_append else "")
+        )
         url = (
             f"{url}/{file_type}" if file_type else url
         )  # Append the type if there is one
@@ -716,8 +847,13 @@ class TredictPy:
             the failure is due to a duplicate).
         """
 
-        if not self.is_user_access_token_valid():
-            raise APIException("User access token not obtained or expired.")
+        if (
+            not self._config["personal_access_token"]
+            and not self.is_user_access_token_valid()
+        ):
+            raise APIException(
+                "No personal access token and user access token not obtained or expired."
+            )
 
         with open(file_path, "rb") as f:
             activity_file = f.read(12)
@@ -731,12 +867,21 @@ class TredictPy:
                 f"Unable to upload file as it is not a FIT or TCX activity file!"
             )
 
+        bearer_token = (
+            self._config["personal_access_token"]
+            or self._config["user_access_token"]["access_token"]
+        )
+
         headers = {
-            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "authorization": f"bearer {bearer_token}",
             "accept": "application/json;charset=UTF-8",
         }
 
-        url = f"{ENDPOINT_BASE_URL}activity/upload/{self._endpoint_append}"
+        url = (
+            ENDPOINT_BASE_URL
+            + "activity/upload"
+            + ("/" + self._endpoint_append if self._endpoint_append else "")
+        )
 
         files = {
             "file": (
@@ -787,16 +932,30 @@ class TredictPy:
             APIException: If the request fails.
         """
 
-        if not self.is_user_access_token_valid():
-            raise APIException("User access token not obtained or expired.")
+        if (
+            not self._config["personal_access_token"]
+            and not self.is_user_access_token_valid()
+        ):
+            raise APIException(
+                "No personal access token and user access token not obtained or expired."
+            )
+
+        bearer_token = (
+            self._config["personal_access_token"]
+            or self._config["user_access_token"]["access_token"]
+        )
 
         headers = {
-            "authorization": f"bearer {self._config['user_access_token']['access_token']}",
+            "authorization": f"bearer {bearer_token}",
             "accept": "application/json;charset=UTF-8",
             "content-type": "application/json;charset=UTF-8",
         }
 
-        url = f"{ENDPOINT_BASE_URL}bodyvalues/{self._endpoint_append}"
+        url = (
+            ENDPOINT_BASE_URL
+            + "bodyvalues"
+            + ("/" + self._endpoint_append if self._endpoint_append else "")
+        )
 
         data = {
             "bodyvalues": [

@@ -7,10 +7,10 @@ To apply for access to the API see here: [Tredict API](https://www.tredict.com/b
 Once you have credentials, etc, start using the package:
 
 ```
-import tredictpy
+from tredict import TredictPy
 
 # Client with default config file
-client = TredictPy(
+client = TredictPy.as_application(
     "<client-id>",
     "<client-secret">,
     "<token-append>",
@@ -28,6 +28,18 @@ client.activity_list()
 
 # Deregister
 client.deregister()
+```
+
+Or use a personal access token:
+
+```
+from tredict import TredictPy
+
+# Client with default config file
+client = TredictPy.with_personal_access_token()
+
+# Fetch a list of all activities on your profile
+client.activity_list()
 ```
 
 View the docs at: [tredictpy docs](https://danieldean.github.io/tredictpy)
