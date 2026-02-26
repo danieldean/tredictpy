@@ -1,7 +1,7 @@
 api
 pin
 api.kdbx
-*-config.json
+*-secrets.json
 *.py
 __pycache__
 *.ipynb
