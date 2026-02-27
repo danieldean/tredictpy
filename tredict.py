@@ -703,6 +703,68 @@ class TredictPy:
 
         return self._download_endpoint("zones", params=params)
 
+    def efforts_download(
+        self,
+        start_date: datetime = None,
+        end_date: datetime = None,
+    ) -> dict:
+        """Fetch efforts.
+
+        Args:
+            start_date (datetime, optional): Fetch efforts from this date. Local times will be converted to UTC.
+            Defaults to None.
+            end_date (datetime, optional): Fetch efforts ending at this date. Local times will be converted to UTC.
+            Defaults to None.
+
+        Raises:
+            APIException: If the request fails.
+
+        Returns:
+            dict: A dict containing the efforts.
+        """
+
+        params = {
+            "startDate": (
+                start_date.astimezone(timezone.utc).isoformat() if start_date else None
+            ),
+            "endDate": (
+                end_date.astimezone(timezone.utc).isoformat() if end_date else None
+            ),
+        }
+
+        return self._download_endpoint("efforts", params=params)
+
+    def hrv_download(
+        self,
+        start_date: datetime = None,
+        end_date: datetime = None,
+    ) -> dict:
+        """Fetch HRV data
+
+        Args:
+            start_date (datetime, optional): Fetch HRV data from this date. Local times will be converted to UTC.
+            Defaults to None.
+            end_date (datetime, optional): Fetch HRV data ending at this date. Local times will be converted to UTC.
+            Defaults to None.
+
+        Raises:
+            APIException: If the request fails.
+
+        Returns:
+            dict: A dict containing the HRV data.
+        """
+
+        params = {
+            "startDate": (
+                start_date.astimezone(timezone.utc).isoformat() if start_date else None
+            ),
+            "endDate": (
+                end_date.astimezone(timezone.utc).isoformat() if end_date else None
+            ),
+        }
+
+        return self._download_endpoint("hrv", params=params)
+
     def _file_download_endpoint(
         self, endpoint: str, id: str, params: dict = None, file_type: str = None
     ) -> bytes:
